@@ -6,7 +6,7 @@ public class Bomb extends Tile
   
   public Bomb() {
     super("Bomb", true, true);
-    // fuse = 5; // TODO: set fuse to appropiate number
+    fuse = 5; // TODO: set fuse to appropiate number
   }
 
   // TODO: make Bomb functions with gameticks

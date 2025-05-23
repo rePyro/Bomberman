@@ -1,5 +1,6 @@
 // package declarations and imports here;
 import javax.swing.JFrame;
+import javax.swing.ImageIcon;
 
 public class GameWindow 
 {
@@ -14,6 +15,7 @@ public class GameWindow
     window.setVisible(true);
     window.setResizable(false);
     window.setLocationRelativeTo(null);
+    window.setIconImage(new ImageIcon("graphics/tempIcon.png").getImage());
   }
 
 }

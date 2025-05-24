@@ -38,4 +38,19 @@ public class Map
   public Tile getTile(int row, int col) {
     return field[row][col];
   }
+  public void printMap() {
+    for (int row = 0; row < field.length; row++) {
+      for (int col = 0; col < field[0].length; col++) {
+        if (field[row][col] instanceof HardWall) {
+          System.out.print("H");
+        } else if (field[row][col] instanceof SoftWall) {
+          System.out.print("S");
+        } else {
+          System.out.print(" ");
+        }
+        System.out.print(" ");
+      }
+      System.out.println();
+    }
+  }
 }

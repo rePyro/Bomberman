@@ -6,6 +6,10 @@ public class Main
   {
     // create a new game window
     GameWindow window = new GameWindow();
-    
+    System.out.println("great success");
+    // create a new map object
+    Map map = new Map();
+    map.printMap();
+
+    }
   }   
-}

@@ -3,10 +3,11 @@ public class Map
 {
   // variables
   private Tile[][] field;
-
+  private int tileSize;
   // constructor
   public Map() {
     field = new Tile[9][15]; // initialize empty field
+    tileSize = 48;
 
     // set Tiles for each position
     for (int row = 0; row < field.length; row++) {
@@ -24,8 +25,14 @@ public class Map
                   (row != field.length - 2 || col != field[0].length - 3)) // skip spawn spaces
         {
           if ((int) (Math.random() * 10) < 7) { // 70% chance to...
-          field[row][col] = new SoftWall(); // SoftWall the grid
+            field[row][col] = new SoftWall(); // SoftWall the grid
+          } else {
+            field[row][col] = new Tile(); // Tile the empty spaces
           }
+        } else if ((row == 1 && col == 1) || (row == field.length - 2 && col == field[0].length - 2)) {
+          field[row][col] = new SpawnTile(); // Tile the spawns
+        } else {
+          field[row][col] = new Tile(); // Tile the guaranteed empty spaces arond spawn
         }
       }
     }
@@ -45,6 +52,13 @@ public class Map
   public void setTile(int row, int col, Tile tile) {
     field[row][col] = tile;
   }
+  //Converter
+  public int rowToY( int row) {
+    return (int)(row+0.5)*tileSize;
+  }
+  public int colToX(int col) {
+    return (int)(col+0.5)*tileSize;
+  }
   // visual aid
   public void printMap() {
     for (int row = 0; row < field.length; row++) {
@@ -53,8 +67,10 @@ public class Map
           System.out.print("H");
         } else if (field[row][col] instanceof SoftWall) {
           System.out.print("S");
-        } else {
-          System.out.print(" ");
+        } else if (field[row][col] instanceof SpawnTile) {
+          System.out.print("A");
+        } else if (field[row][col] instanceof Tile) {
+          System.out.print("T");
         }
         System.out.print(" ");
       }

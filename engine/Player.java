@@ -1,19 +1,42 @@
 // package declarations and imports here;
 public class Player 
 {
+  private static int playerCount = 0; // static variable to keep track of players
+  private int playerNumber; // instance variable to keep track of this player's number
   private int x;
   private int y;
   private int speed;
   private int row;
   private int col;
   private int rowCount;
+  private int tileSize;
 
 //constructor
-  public Player(Map map, int row, int col) {
+  public Player(Map map, int row, int col) {playerCount++;
+    playerNumber = playerCount; // assign the current player count to this player
+    x = (int)((col+0.5)*48);
+    y = (int)((row+0.5)*48);
+    speed = 4;
+    rowCount = map.getField().length;
+    
+  }
+  public Player(Map map) {
+    playerCount++;
+    playerNumber = playerCount; // assign the current player count to this player
+    for (int i = 0; i < map.getField().length; i++) {
+      for (int j = 0; j < map.getField()[i].length; j++) {
+        if (map.getField()[i][j].getTileType().equals("SpawnTile") &&
+        ((SpawnTile)(map.getField()[i][j])).getSpawnNumber() == playerNumber) { // find the first empty tile
+          row = i;
+          col = j;
+          break;
+        }
+      }
+    }
     this.row = row;
     this.col = col;
     x = (int)((col+0.5)*48);
-    y = (int)((row+0.5+(map.getField().length-1))*48);
+    y = (int)((row+0.5)*48);
     speed = 4;
     rowCount = map.getField().length;
   }
@@ -52,11 +75,11 @@ public class Player
   }
   //Grid conversion
   public void indexPos() {
-    row = rowCount-1-(int)(y/48+0.5);
+    row = (int)(y/48+0.5);
     col = (int)(x/48+0.5);
   }
   public int rowToY() {
-    return (int)(row+0.5+(rowCount-1))*48;
+    return (int)(row+0.5)*48;
   }
   public int colToX() {
     return (int)(col+0.5)*48;

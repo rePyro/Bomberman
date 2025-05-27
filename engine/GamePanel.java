@@ -19,27 +19,25 @@ public class GamePanel extends JPanel implements Runnable {
   private int FPS = 60; // frames per second
   private Player player1;
   private Player player2;
+  private Map map; // map object
   
   KeyHandler keyHandler = new KeyHandler(); // key handler for input
   Thread gameThread; // thread for the game loop
 
   // constructor
-  public GamePanel() {
+  public GamePanel(Map map, Player player1, Player player2) {
     this.setPreferredSize(new Dimension(screenWidth, screenHeight));
     this.setBackground(Color.black);
     this.setDoubleBuffered(true); // double buffering for smoother graphics
     this.addKeyListener(keyHandler);
     this.setFocusable(true); // requires focus to receive key events
-  }
-
-  // methods
-  public void getPlayers(Player player1, Player player2) {
+    //this.requestFocusInWindow();
+    
+    this.map = map;
     this.player1 = player1;
     this.player2 = player2;
   }
 
-  
-  
   public void startGameThread() {
     gameThread = new Thread(this); // create a new thread
     gameThread.start(); // start the thread
@@ -89,28 +87,50 @@ public class GamePanel extends JPanel implements Runnable {
 
   public void update() {
     //keyHandler.setLeftPressed(true);
+    
     if (keyHandler.getUpPressed() == true) { // if the up key is pressed
-      playerY -= playerSpeed;
+      player1.setY(player1.getY() - player1.getSpeed());
       System.out.println("test: moving up");
-    } else if (keyHandler.getDownPressed() == true) { // if the down key is pressed
-      playerY += playerSpeed;
+    } if (keyHandler.getDownPressed() == true) { // if the down key is pressed
+      player1.setY(player1.getY() + player1.getSpeed());
       System.out.println("test: moving down");
-    } else if (keyHandler.getRightPressed() == true) { // if the right key is pressed
-      playerX -= playerSpeed;
+    } if (keyHandler.getRightPressed() == true) { // if the right key is pressed
+      player1.setX(player1.getX() + player1.getSpeed());
       System.out.println("test: moving right");
-    } else if (keyHandler.getLeftPressed() == true) { // if the left key is pressed
-      playerX += playerSpeed;
+    } if (keyHandler.getLeftPressed() == true) { // if the left key is pressed
+      player1.setX(player1.getX() - player1.getSpeed());
       System.out.println("test: moving left");
-    } else {
-      System.out.println("test: no movement");
-    }
+    } //else {
+      //System.out.println("test: no movement");
+    //}
   }
 
   public void paintComponent(Graphics g) { 
     super.paintComponent(g);                       // basically, this enables repaint() to work
     Graphics2D g2 = (Graphics2D)g;                 // cast g to Graphics2D for more functions
-    g2.setColor(Color.white);
-    g2.fillRect(playerX, playerY, tileSize, tileSize); // fill the square with white
-    g2.dispose();                                  // saves memory
+    
+    for (int row = 0; row < map.getField().length; row++) {
+      for (int col = 0; col < map.getField()[0].length; col++) {
+        if (map.getField()[row][col].getTileType().equals("HardWall")) {
+          g2.setColor(Color.green);
+          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
+        } else if (map.getField()[row][col] instanceof SoftWall) {
+          g2.setColor(Color.blue);
+          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
+        } else if (map.getField()[row][col] instanceof SpawnTile) {
+          g2.setColor(Color.red);
+          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
+        } else {
+          g2.setColor(Color.white);
+          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
+        }
+      }
+    }
+    g2.setColor(Color.magenta);
+    g2.fillRect(player1.colToX(),player1.rowToY(), tileSize, tileSize);
+    g2.setColor(Color.black);
+    g2.fillRect(player1.getX(), player1.getY(), tileSize, tileSize); // fill the square with white
+    g2.dispose();                               
   } 
+
 }

@@ -1,11 +1,9 @@
-// imports (Tower of Babel)
+// imports
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints.Key;
 
 public class GamePanel extends JPanel implements Runnable {
   // variables
@@ -21,7 +19,7 @@ public class GamePanel extends JPanel implements Runnable {
   private int FPS = 60; // frames per second
   private Player player1;
   private Player player2;
-
+  
   KeyHandler keyHandler = new KeyHandler(); // key handler for input
   Thread gameThread; // thread for the game loop
 
@@ -51,6 +49,8 @@ public class GamePanel extends JPanel implements Runnable {
   @Override
   public void run() {
     
+    // using delta method of rendering. Keeps track of actual FPS. 
+
     double drawInterval = 1000000000 / FPS; // equivalent to 1 second / FPS, or 0.01666 sec
     double delta = 0;
     long lastTime = System.nanoTime();
@@ -59,7 +59,6 @@ public class GamePanel extends JPanel implements Runnable {
     long drawCount = 0;
 
     while (gameThread != null) {
-      // System.out.println("test: game loop running");
       currentTime = System.nanoTime();
       delta += (currentTime - lastTime) / drawInterval;
       timer += (currentTime - lastTime);
@@ -72,34 +71,46 @@ public class GamePanel extends JPanel implements Runnable {
         repaint();
         delta--;
         drawCount++;
+        //System.out.println("test: upd + rep'd");
       }
 
       if (timer >= 1000000000) { // if 1 second has passed
-        System.out.println("FPS: " + drawCount); // print the FPS
+        //System.out.println("FPS: " + drawCount); // print the FPS
         drawCount = 0; // reset the draw count
         timer = 0; // reset the timer
       }
     }
   }
+
+                                                                                      // temp
+                                                                                    private int playerX = 100;
+                                                                                    private int playerY = 100;
+                                                                                    private int playerSpeed = 4;
+
   public void update() {
+    //keyHandler.setLeftPressed(true);
     if (keyHandler.getUpPressed() == true) { // if the up key is pressed
-      player1.setY(player1.getY() + player1.getSpeed()); // move up
-    }
-    else if (keyHandler.getDownPressed() == true) { // if the down key is pressed
-      player1.setY(player1.getY() - player1.getSpeed()); // move down
-    }
-    else if (keyHandler.getRightPressed() == true) { // if the right key is pressed
-      player1.setX(player1.getX() + player1.getSpeed()); // move right
-    }
-    else if (keyHandler.getLeftPressed() == true) { // if the left key is pressed
-      player1.setX(player1.getX() - player1.getSpeed()); // move left
+      playerY -= playerSpeed;
+      System.out.println("test: moving up");
+    } else if (keyHandler.getDownPressed() == true) { // if the down key is pressed
+      playerY += playerSpeed;
+      System.out.println("test: moving down");
+    } else if (keyHandler.getRightPressed() == true) { // if the right key is pressed
+      playerX -= playerSpeed;
+      System.out.println("test: moving right");
+    } else if (keyHandler.getLeftPressed() == true) { // if the left key is pressed
+      playerX += playerSpeed;
+      System.out.println("test: moving left");
+    } else {
+      System.out.println("test: no movement");
     }
   }
+
   public void paintComponent(Graphics g) { 
     super.paintComponent(g);                       // basically, this enables repaint() to work
-    Graphics2D g2 = (Graphics2D) g;                // cast g to Graphics2D for more functions
+    Graphics2D g2 = (Graphics2D)g;                 // cast g to Graphics2D for more functions
     g2.setColor(Color.white);
-    g2.fillRect(player1.getX(), player1.getY(), tileSize, tileSize); // fill the background with white
+    g2.fillRect(playerX, playerY, tileSize, tileSize); // fill the square with white
     g2.dispose();                                  // saves memory
   } 
 }

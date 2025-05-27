@@ -21,6 +21,8 @@ public class Main
     // start the game clock
     gamePanel.startGameThread();
 
+    /* test player spawn and position
+
     // create a scanner for user input
     Scanner scan = new Scanner(System.in);
     while (true) {
@@ -34,5 +36,6 @@ public class Main
     
     System.out.println("index: ["+tester.getRow()+"], ["+tester.getCol()+"]");
   }
+  */
 }
 }   

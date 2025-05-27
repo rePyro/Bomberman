@@ -54,10 +54,10 @@ public class Map
   }
   //Converter
   public int rowToY( int row) {
-    return (int)(row+0.5)*tileSize;
+    return (int)((row+0.5)*tileSize);
   }
   public int colToX(int col) {
-    return (int)(col+0.5)*tileSize;
+    return (int)((col+0.5)*tileSize);
   }
   // visual aid
   public void printMap() {

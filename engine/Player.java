@@ -79,10 +79,10 @@ public class Player
     col = (int)(x/48+0.5);
   }
   public int rowToY() {
-    return (int)(row+0.5)*48;
+    return (int)((row+0.5)*48);
   }
   public int colToX() {
-    return (int)(col+0.5)*48;
+    return (int)((col+0.5)*48);
   }
   //Collision detection
   public boolean checkUp(Map map) {

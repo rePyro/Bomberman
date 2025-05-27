@@ -88,16 +88,16 @@ public class GamePanel extends JPanel implements Runnable {
   public void update() {
     //keyHandler.setLeftPressed(true);
     
-    if (keyHandler.getUpPressed() == true) { // if the up key is pressed
+    if (keyHandler.getUpPressed() == true && player1.canMoveUp(map) == true) { // if the up key is pressed
       player1.setY(player1.getY() - player1.getSpeed());
       System.out.println("test: moving up");
-    } if (keyHandler.getDownPressed() == true) { // if the down key is pressed
+    } if (keyHandler.getDownPressed() == true && player1.canMoveDown(map) == true) { // if the down key is pressed
       player1.setY(player1.getY() + player1.getSpeed());
       System.out.println("test: moving down");
-    } if (keyHandler.getRightPressed() == true) { // if the right key is pressed
+    } if (keyHandler.getRightPressed() == true && player1.canMoveRight(map) == true) { // if the right key is pressed
       player1.setX(player1.getX() + player1.getSpeed());
       System.out.println("test: moving right");
-    } if (keyHandler.getLeftPressed() == true) { // if the left key is pressed
+    } if (keyHandler.getLeftPressed() == true && player1.canMoveLeft(map) == true) { // if the left key is pressed
       player1.setX(player1.getX() - player1.getSpeed());
       System.out.println("test: moving left");
     } //else {

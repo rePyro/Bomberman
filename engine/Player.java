@@ -99,7 +99,10 @@ public class Player
   }
   //Movement
   public boolean canMoveUp(Map map) {
-    if (checkUp(map) == true && Math.abs(colToX() - x) < 9) {
+    if (rowToY() < y) {
+      return true;
+    }
+    else if (checkUp(map) == true && Math.abs(colToX() - x) < 9) {
       x = colToX();
       return true;
     }
@@ -108,16 +111,23 @@ public class Player
     }
   }
   public boolean canMoveDown(Map map) {
-    if (checkDown(map) == true && Math.abs(colToX() - x) < 9) {
+    if (rowToY() > y) {
+      return true;
+    }
+    else if (checkDown(map) == true && Math.abs(colToX() - x) < 9) {
       x = colToX();
       return true;
+    
     }
     else {
       return false;
     }
   }
   public boolean canMoveLeft(Map map) {
-    if (checkLeft(map) == true &&  Math.abs(rowToY() - y) < 9) {
+    if (colToX() < x) {
+      return true;
+    }
+    else if (checkLeft(map) == true &&  Math.abs(rowToY() - y) < 9) {
       y = rowToY();
       return true;
     }
@@ -126,6 +136,9 @@ public class Player
     }
   }
   public boolean canMoveRight(Map map) {
+    if (colToX() > x) {
+      return true;
+    }
     if (checkRight(map) == true && Math.abs(rowToY() - y) < 9) {
       y = rowToY();
       return true;

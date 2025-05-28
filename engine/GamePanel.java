@@ -87,19 +87,26 @@ public class GamePanel extends JPanel implements Runnable {
 
   public void update() {
     //keyHandler.setLeftPressed(true);
-    
+    if (keyHandler.getEnterJustPressed()) {
+      map.addBomb(player1.getRow(), player1.getCol());
+      System.out.println("SpawnBomb");
+      keyHandler.resetEnterJustPressed();
+    }
+    if (keyHandler.getSpacePressed() == true) {
+      map.explodeCheck();
+    }
     if (keyHandler.getUpPressed() == true && player1.canMoveUp(map) == true) { // if the up key is pressed
       player1.setY(player1.getY() - player1.getSpeed());
-      System.out.println("test: moving up");
+      //System.out.println("test: moving up");
     } if (keyHandler.getDownPressed() == true && player1.canMoveDown(map) == true) { // if the down key is pressed
       player1.setY(player1.getY() + player1.getSpeed());
-      System.out.println("test: moving down");
+      //System.out.println("test: moving down");
     } if (keyHandler.getRightPressed() == true && player1.canMoveRight(map) == true) { // if the right key is pressed
       player1.setX(player1.getX() + player1.getSpeed());
-      System.out.println("test: moving right");
+      //System.out.println("test: moving right");
     } if (keyHandler.getLeftPressed() == true && player1.canMoveLeft(map) == true) { // if the left key is pressed
       player1.setX(player1.getX() - player1.getSpeed());
-      System.out.println("test: moving left");
+      //System.out.println("test: moving left");
     } //else {
       //System.out.println("test: no movement");
     //}
@@ -120,6 +127,12 @@ public class GamePanel extends JPanel implements Runnable {
         } else if (map.getField()[row][col] instanceof SpawnTile) {
           g2.setColor(Color.red);
           g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
+          } else if (map.getField()[row][col] instanceof Bomb) {
+          g2.setColor(Color.black);
+          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
+          } else if (map.getField()[row][col] instanceof BombFire) {
+          g2.setColor(Color.orange);
+          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
         } else {
           g2.setColor(Color.white);
           g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
@@ -128,7 +141,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
     g2.setColor(Color.magenta);
     g2.fillRect(player1.colToX(),player1.rowToY(), tileSize, tileSize);
-    g2.setColor(Color.black);
+    g2.setColor(Color.pink);
     g2.fillRect(player1.getX(), player1.getY(), tileSize, tileSize); // fill the square with white
     g2.dispose();                               
   } 

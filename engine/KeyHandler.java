@@ -5,6 +5,7 @@ public class KeyHandler implements KeyListener {
     // variables
     private boolean upPressed, downPressed, leftPressed, rightPressed; // movement keys
     private boolean enterPressed, spacePressed; // action keys
+    private boolean enterJustPressed = false;
 
     @Override
     public void keyTyped(KeyEvent e) {} // purposely empty, not used
@@ -17,7 +18,10 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_A) { leftPressed = true; }
         if (code == KeyEvent.VK_S) { downPressed = true; }
         if (code == KeyEvent.VK_D) { rightPressed = true; }
-        if (code == KeyEvent.VK_ENTER) { enterPressed = true; }
+        if (code == KeyEvent.VK_ENTER && !enterPressed) {
+        enterJustPressed = true; // Only true on the frame the key is pressed
+    }
+    if (code == KeyEvent.VK_ENTER) { enterPressed = true; }
         if (code == KeyEvent.VK_SPACE) { spacePressed = true; }
     }
 
@@ -40,6 +44,9 @@ public class KeyHandler implements KeyListener {
     public boolean getRightPressed() { return rightPressed; }
     public boolean getEnterPressed() { return enterPressed; }
     public boolean getSpacePressed() { return spacePressed; }
+    // Accessor
+public boolean getEnterJustPressed() { return enterJustPressed; }
+public void resetEnterJustPressed() { enterJustPressed = false; }
 
     // temp
     public void setDownPressed(boolean b) {

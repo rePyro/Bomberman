@@ -98,11 +98,12 @@ public class Player
     return map.isFree(row, col+1);
   }
   //Movement
+  private int tileLeniency = 15;
   public boolean canMoveUp(Map map) {
     if (rowToY() < y) {
       return true;
     }
-    else if (checkUp(map) == true && Math.abs(colToX() - x) < 9) {
+    else if (checkUp(map) == true && Math.abs(colToX() - x) < tileLeniency) {
       x = colToX();
       return true;
     }
@@ -114,7 +115,7 @@ public class Player
     if (rowToY() > y) {
       return true;
     }
-    else if (checkDown(map) == true && Math.abs(colToX() - x) < 9) {
+    else if (checkDown(map) == true && Math.abs(colToX() - x) < tileLeniency) {
       x = colToX();
       return true;
     
@@ -127,7 +128,7 @@ public class Player
     if (colToX() < x) {
       return true;
     }
-    else if (checkLeft(map) == true &&  Math.abs(rowToY() - y) < 9) {
+    else if (checkLeft(map) == true &&  Math.abs(rowToY() - y) < tileLeniency) {
       y = rowToY();
       return true;
     }
@@ -139,7 +140,7 @@ public class Player
     if (colToX() > x) {
       return true;
     }
-    if (checkRight(map) == true && Math.abs(rowToY() - y) < 9) {
+    if (checkRight(map) == true && Math.abs(rowToY() - y) < tileLeniency) {
       y = rowToY();
       return true;
     }

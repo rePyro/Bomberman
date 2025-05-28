@@ -10,6 +10,7 @@ public class Player
   private int col;
   private int rowCount;
   private int tileSize;
+  private boolean alive = true; // player is alive by default
 
 //constructor
   public Player(Map map, int row, int col) {playerCount++;
@@ -40,7 +41,26 @@ public class Player
     speed = 4;
     rowCount = map.getField().length;
   }
+  public void killPlayer() {
+    alive = false; // set player to dead
+  }
+  public void respawn(Map map) {
+    alive = true; // set player to alive
+    map.setTile(1, 1, new SpawnTile()); // clear the tile where the player was
+          row = 1;
+          col = 1;
+    this.row = row;
+    this.col = col;
+    x = (int)((col+0.5)*48);
+    y = (int)((row+0.5)*48);
+  }
   //accessors
+  public int getPlayerNumber() {
+    return playerNumber; // return the player number
+  }
+  public boolean isAlive() {
+    return alive; // return the alive status of the player
+  }
   public int getX() {
     return x;
   }
@@ -98,7 +118,7 @@ public class Player
     return map.isFree(row, col+1);
   }
   //Movement
-  private int tileLeniency = 15;
+  private int tileLeniency = 20;//margin of error for tile movement, so that the player can move even if they are not exactly on the tile
   public boolean canMoveUp(Map map) {
     if (rowToY() < y) {
       return true;
@@ -149,6 +169,18 @@ public class Player
     }
   }
   
+  //Death Stuff (GAMEPLAY?!)
+public void deathCheck(Map map) {
+    if (alive == true && map.getTile(row, col).getTileType().equals("BombFire")) { // if the player is on a BombFire tile
+      killPlayer(); // kill the player
+      System.out.println("Player " + playerNumber + " has died!\nSkill Issue Loser heh"); // print death message
+    }
+  }
+  
+  //Debugging
+  public String toString() {
+    return "Player " + playerNumber + ": (" + row + ", " + col + ") at (" + x + ", " + y + ")";
+  }
 
 
 

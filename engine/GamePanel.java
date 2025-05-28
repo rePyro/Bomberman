@@ -55,11 +55,13 @@ public class GamePanel extends JPanel implements Runnable {
     long currentTime;
     long timer = 0;
     long drawCount = 0;
+    long gameTickTimer = 0;
 
     while (gameThread != null) {
       currentTime = System.nanoTime();
       delta += (currentTime - lastTime) / drawInterval;
       timer += (currentTime - lastTime);
+      gameTickTimer += (currentTime - lastTime); // for game tick timing
       lastTime = currentTime;
       if (delta >= 1) { // if enough time has passed
         // UPDATE: update information, ex. player position, map, etc.
@@ -70,6 +72,12 @@ public class GamePanel extends JPanel implements Runnable {
         delta--;
         drawCount++;
         //System.out.println("test: upd + rep'd");
+      }
+
+      if (gameTickTimer >= 1000000000) { // 1 tick = 1 second
+        map.gameTick(); // update the map
+        
+        gameTickTimer = 0; // reset the game tick timer
       }
 
       if (timer >= 1000000000) { // if 1 second has passed
@@ -86,15 +94,42 @@ public class GamePanel extends JPanel implements Runnable {
                                                                                     private int playerSpeed = 4;
 
   public void update() {
+    player1.deathCheck(map); // check if player 1 is dead
+    player2.deathCheck(map); // check if player 2 is dead
     //keyHandler.setLeftPressed(true);
+    
+    if (keyHandler.getSpaceJustPressed()) {
+      System.out.println("test: space just pressed");
+      if (player1.isAlive() == false) { // if player is dead
+        player1.respawn(map); // respawn the player
+        System.out.println("Respawned Player 1");
+      } else {
+        System.out.println("Player 1 is alive, cannot respawn");
+      }
+      if (player2.isAlive() == false) { // if player is dead
+        player2.respawn(map); // respawn the player
+        System.out.println("Respawned Player 2");
+      } else {
+        System.out.println("Player 2 is alive, cannot respawn");
+      }
+      keyHandler.resetSpaceJustPressed();
+    }
+    //Actions that require life
     if (keyHandler.getEnterJustPressed()) {
+    if (player1.isAlive()) {
       map.addBomb(player1.getRow(), player1.getCol());
       System.out.println("SpawnBomb");
+    }
+    else {System.out.println("heh ded men no get bomb (p1)");}
+    if (player2.isAlive()) {
+      map.addBomb(player2.getRow(), player2.getCol());
+      System.out.println("SpawnBomb");
+    }
+    else {System.out.println("heh ded men no get bomb (p2)");}
       keyHandler.resetEnterJustPressed();
+      
     }
-    if (keyHandler.getSpacePressed() == true) {
-      map.explodeCheck();
-    }
+    if (player1.isAlive()) { // if player 1 is alive
     if (keyHandler.getUpPressed() == true && player1.canMoveUp(map) == true) { // if the up key is pressed
       player1.setY(player1.getY() - player1.getSpeed());
       //System.out.println("test: moving up");
@@ -111,6 +146,26 @@ public class GamePanel extends JPanel implements Runnable {
       //System.out.println("test: no movement");
     //}
   }
+  
+  if (player2.isAlive()) {
+
+    if (keyHandler.getUpPressed2() == true && player2.canMoveUp(map) == true) { // if the up key is pressed
+      player2.setY(player2.getY() - player2.getSpeed());
+      //System.out.println("test: moving up");
+    } if (keyHandler.getDownPressed2() == true && player2.canMoveDown(map) == true) { // if the down key is pressed
+      player2.setY(player2.getY() + player2.getSpeed());
+      //System.out.println("test: moving down");
+    } if (keyHandler.getRightPressed2() == true && player2.canMoveRight(map) == true) { // if the right key is pressed
+      player2.setX(player2.getX() + player2.getSpeed());
+      //System.out.println("test: moving right");
+    } if (keyHandler.getLeftPressed2() == true && player2.canMoveLeft(map) == true) { // if the left key is pressed
+      player2.setX(player2.getX() - player2.getSpeed());
+      //System.out.println("test: moving left");
+    } //else {
+      //System.out.println("test: no movement");
+    //}
+  }
+}
 
   public void paintComponent(Graphics g) { 
     super.paintComponent(g);                       // basically, this enables repaint() to work
@@ -139,11 +194,18 @@ public class GamePanel extends JPanel implements Runnable {
         }
       }
     }
+    if (player1.isAlive()) { // if player 1 is alive
     g2.setColor(Color.magenta);
     g2.fillRect(player1.colToX(),player1.rowToY(), tileSize, tileSize);
     g2.setColor(Color.pink);
-    g2.fillRect(player1.getX(), player1.getY(), tileSize, tileSize); // fill the square with white
-    g2.dispose();                               
+    g2.fillRect(player1.getX(), player1.getY(), tileSize, tileSize); // fill the square with white                              
   } 
-
+  if (player2.isAlive()) { // if player 2 is alive
+    g2.setColor(Color.magenta);
+    g2.fillRect(player2.colToX(),player2.rowToY(), tileSize, tileSize);
+    g2.setColor(Color.darkGray);
+    g2.fillRect(player2.getX(), player2.getY(), tileSize, tileSize); // fill the square with white                              
+  } 
+  g2.dispose(); 
+}
 }

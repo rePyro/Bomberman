@@ -11,7 +11,7 @@ public class Bomb extends Tile
     super("Bomb", true, true);
     this.row = row;
     this.col = col;
-    fuse = 5; // TODO: set fuse to appropiate number
+    fuse = 2; // TODO: set fuse to appropiate number
     power = 2;
   }
   public void tickFuse() {

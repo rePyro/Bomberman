@@ -17,6 +17,9 @@ public class Bomb extends Tile
   public void tickFuse() {
     fuse--;
   }
+  public void detonate() {
+    this.fuse = 0;
+}
 
   public int getFuse() {
     return fuse;

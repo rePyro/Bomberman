@@ -14,7 +14,7 @@ public class Main
 
     // create two players
     Player player1 = new Player(map); // player 1 at top left corner
-    Player player2 = new Player(map, map.getField().length - 2, map.getField()[0].length - 2); // player 2 at bottom right corner
+    Player player2 = new Player(map); // player 2 at bottom right corner
 
     // create a new game window
     GameWindow window = new GameWindow();

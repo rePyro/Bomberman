@@ -113,6 +113,14 @@ public void addBombFireGroup(BombFireGroup group) {
     setTile(row, col, fire);
   }
 public void addBombFire(BombFireGroup group, int row, int col) {
+  Tile oldTile = getTile(row, col);
+    if (oldTile instanceof BombFire) {
+        BombFire oldFire = (BombFire) oldTile;
+        BombFireGroup oldGroup = oldFire.getGroup();
+        if (oldGroup != null) {
+            oldGroup.getFires().remove(oldFire);
+        }
+    }
     Tile fire = new BombFire(row, col);
     setTile(row, col, fire);
     BombFire fire2 = new BombFire(group, row, col);

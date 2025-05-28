@@ -35,5 +35,8 @@ public int getFuse() {
   public int getCol() {
     return col;
   }
+  public BombFireGroup getGroup() {
+    return group;
+  }
 
 }

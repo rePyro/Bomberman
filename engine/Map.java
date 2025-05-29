@@ -59,6 +59,9 @@ public class Map
     return field[row][col];
   }
   public boolean isFree(int row, int col) {
+    if (!withinR(row) || !withinC(col)) {
+      return false; // out of bounds
+    }
     return !field[row][col].getSolid();
   }
   // mutators
@@ -132,30 +135,52 @@ public void addBombFire(BombFireGroup group, int row, int col) {
 
   //EXPLOSIONS
   public void addBomb(int row, int col) {
-    Tile bomb = new Bomb(row, col);
-    setTile (row, col, bomb);
-    Bomb bomb2 = new Bomb(row, col);
-    bombList.add(bomb2);
-  }
+    Bomb bomb = new Bomb(row, col);
+    setTile(row, col, bomb);
+    bombList.add(bomb);
+}
 
   public void explodeCheck() {
-    for (int i = bombList.size()-1; i >= 0; i--) {
-      System.out.print(bombList.get(i).getFuse());
-      if (bombList.get(i).getFuse() == 0) {
-        //Run Explosion Process
-        BombFireGroup group = new BombFireGroup(5);
-        addBombFireGroup(group);
-        Bomb bomb = bombList.get(i);
-        blowUp(bomb, 1, group);
-        blowDown(bomb, 1, group);
-        blowLeft(bomb, 1, group);
-        blowRight(bomb, 1, group);
-        addBombFire(group, bomb.getRow(), bomb.getCol());
-        bombList.remove(i);
+    // 1. Tick all bombs ONCE
+    for (int i = 0; i < bombList.size(); i++) {
+        if (bombList.get(i).getFuse() > 0) {
+            bombList.get(i).tickFuse();
         }
-        else bombList.get(i).tickFuse();
-      }
     }
+
+    // 2. Now, repeatedly process all bombs with fuse == 0 (chain reactions)
+    boolean exploded;
+    do {
+        exploded = false;
+        for (int i = bombList.size() - 1; i >= 0; i--) {
+            if (bombList.get(i).getFuse() == 0) {
+                // Run Explosion Process
+                BombFireGroup group = new BombFireGroup(5);
+                addBombFireGroup(group);
+                Bomb bomb = bombList.get(i);
+                blowUp(bomb, 1, group);
+                blowDown(bomb, 1, group);
+                blowLeft(bomb, 1, group);
+                blowRight(bomb, 1, group);
+                addBombFire(group, bomb.getRow(), bomb.getCol());
+                bombList.remove(i);
+                exploded = true;
+            }
+        }
+    } while (exploded);
+}
+
+  public void explode(Bomb bomb) {
+    //Run Explosion Process
+    BombFireGroup group = new BombFireGroup(5);
+    addBombFireGroup(group);
+    blowUp(bomb, 1, group);
+    blowDown(bomb, 1, group);
+    blowLeft(bomb, 1, group);
+    blowRight(bomb, 1, group);
+    addBombFire(group, bomb.getRow(), bomb.getCol());
+    bombList.remove(bomb); // remove the bomb from the list after explosion
+  }
   public void blowUp(Bomb bomb, int num, BombFireGroup group) {
     if (num <= bomb.getPower()) {
       int r = bomb.getRow(); int c = bomb.getCol();
@@ -169,8 +194,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     Bomb targetBomb = (Bomb)field[r-num][c];
     targetBomb.detonate();
 } else if (field[r-num][c].getBreakable() == true) {
-    Tile exploded = new Tile();
-    setTile(r-num, c, exploded);
+   setTile(r-num, c, new Tile());
 }
           }
         }
@@ -189,8 +213,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     Bomb targetBomb = (Bomb)field[r+num][c];
     targetBomb.detonate();
 } else if (field[r+num][c].getBreakable() == true) {
-    Tile exploded = new Tile();
-    setTile(r+num, c, exploded);
+    setTile(r+num, c, new Tile());
 }
           }
         }
@@ -208,8 +231,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     Bomb targetBomb = (Bomb)field[r][c-num];
     targetBomb.detonate();
 } else if (field[r][c-num].getBreakable() == true) {
-    Tile exploded = new Tile();
-    setTile(r, c-num, exploded);
+  setTile(r, c-num, new Tile());
 }
           }
         }
@@ -228,8 +250,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     Bomb targetBomb = (Bomb)field[r][c+num];
     targetBomb.detonate();
 } else if (field[r][c+num].getBreakable() == true) {
-    Tile exploded = new Tile();
-    setTile(r, c+num, exploded);
+    setTile(r, c+num, new Tile());
 }
           }
         }

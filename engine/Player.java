@@ -1,23 +1,66 @@
 // package declarations and imports here;
 public class Player 
 {
+  private static int playerCount = 0; // static variable to keep track of players
+  private int playerNumber; // instance variable to keep track of this player's number
   private int x;
   private int y;
   private int speed;
   private int row;
   private int col;
   private int rowCount;
+  private int tileSize;
+  private boolean alive = true; // player is alive by default
 
 //constructor
-  public Player(Map map, int row, int col) {
+  public Player(Map map, int row, int col) {playerCount++;
+    playerNumber = playerCount; // assign the current player count to this player
+    x = (int)((col+0.5)*48);
+    y = (int)((row+0.5)*48);
+    speed = 4;
+    rowCount = map.getField().length;
+    
+  }
+  public Player(Map map) {
+    playerCount++;
+    playerNumber = playerCount; // assign the current player count to this player
+    for (int i = 0; i < map.getField().length; i++) {
+      for (int j = 0; j < map.getField()[i].length; j++) {
+        if (map.getField()[i][j].getTileType().equals("SpawnTile") &&
+        ((SpawnTile)(map.getField()[i][j])).getSpawnNumber() == playerNumber) { // find the first empty tile
+          row = i;
+          col = j;
+          break;
+        }
+      }
+    }
     this.row = row;
     this.col = col;
     x = (int)((col+0.5)*48);
-    y = (int)((row+0.5+(map.getField().length-1))*48);
+    y = (int)((row+0.5)*48);
     speed = 4;
     rowCount = map.getField().length;
   }
+  public void killPlayer() {
+    alive = false; // set player to dead
+  }
+  public void respawn(Map map) {
+    alive = true; // set player to alive
+    map.setTile(1, 1, new SpawnTile()); // clear the tile where the player was
+          row = 1;
+          col = 1;
+    this.row = row;
+    this.col = col;
+    x = (int)((col+0.5)*48);
+    y = (int)((row+0.5)*48);
+  }
   //accessors
+  public int getPlayerNumber() {
+    return playerNumber; // return the player number
+  }
+  public boolean isAlive() {
+    return alive; // return the alive status of the player
+  }
   public int getX() {
     return x;
   }
@@ -52,14 +95,14 @@ public class Player
   }
   //Grid conversion
   public void indexPos() {
-    row = rowCount-1-(int)(y/48+0.5);
+    row = (int)(y/48+0.5);
     col = (int)(x/48+0.5);
   }
   public int rowToY() {
-    return (int)(row+0.5+(rowCount-1))*48;
+    return (int)((row+0.5)*48);
   }
   public int colToX() {
-    return (int)(col+0.5)*48;
+    return (int)((col+0.5)*48);
   }
   //Collision detection
   public boolean checkUp(Map map) {
@@ -75,8 +118,12 @@ public class Player
     return map.isFree(row, col+1);
   }
   //Movement
+  private int tileLeniency = 20;//margin of error for tile movement, so that the player can move even if they are not exactly on the tile
   public boolean canMoveUp(Map map) {
-    if (checkUp(map) == true && Math.abs(colToX() - x) < 9) {
+    if (rowToY() < y) {
+      return true;
+    }
+    else if (checkUp(map) == true && Math.abs(colToX() - x) < tileLeniency) {
       x = colToX();
       return true;
     }
@@ -85,16 +132,23 @@ public class Player
     }
   }
   public boolean canMoveDown(Map map) {
-    if (checkDown(map) == true && Math.abs(colToX() - x) < 9) {
+    if (rowToY() > y) {
+      return true;
+    }
+    else if (checkDown(map) == true && Math.abs(colToX() - x) < tileLeniency) {
       x = colToX();
       return true;
+    
     }
     else {
       return false;
     }
   }
   public boolean canMoveLeft(Map map) {
-    if (checkLeft(map) == true &&  Math.abs(rowToY() - y) < 9) {
+    if (colToX() < x) {
+      return true;
+    }
+    else if (checkLeft(map) == true &&  Math.abs(rowToY() - y) < tileLeniency) {
       y = rowToY();
       return true;
     }
@@ -103,7 +157,10 @@ public class Player
     }
   }
   public boolean canMoveRight(Map map) {
-    if (checkRight(map) == true && Math.abs(rowToY() - y) < 9) {
+    if (colToX() > x) {
+      return true;
+    }
+    if (checkRight(map) == true && Math.abs(rowToY() - y) < tileLeniency) {
       y = rowToY();
       return true;
     }
@@ -112,6 +169,18 @@ public class Player
     }
   }
   
+  //Death Stuff (GAMEPLAY?!)
+public void deathCheck(Map map) {
+    if (alive == true && map.getTile(row, col).getTileType().equals("BombFire")) { // if the player is on a BombFire tile
+      killPlayer(); // kill the player
+      System.out.println("Player " + playerNumber + " has died!\nSkill Issue Loser heh"); // print death message
+    }
+  }
+  
+  //Debugging
+  public String toString() {
+    return "Player " + playerNumber + ": (" + row + ", " + col + ") at (" + x + ", " + y + ")";
+  }
 
 
 

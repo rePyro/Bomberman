@@ -5,19 +5,23 @@ public class Main
 {
   public static void main(String[] args) 
   {
-    // create a new game window
-    GameWindow window = new GameWindow();
+    
     System.out.println("great success");
     // create a new map object
     Map map = new Map();
     map.printMap();
 
-    GamePanel gamePanel = new GamePanel();
-    window.addPanel(gamePanel); // add the game panel to the window
+
     // create two players
-    Player player1 = new Player(map, 1, 1); // player 1 at top left corner
-    Player player2 = new Player(map, map.getField().length - 2, map.getField()[0].length - 2); // player 2 at bottom right corner
-    gamePanel.getPlayers(player1, player2); // add players to the game panel
+    Player player1 = new Player(map); // player 1 at top left corner
+    Player player2 = new Player(map); // player 2 at bottom right corner
+
+    // create a new game window
+    GameWindow window = new GameWindow();
+    GamePanel gamePanel = new GamePanel(map, player1, player2);
+    window.addPanel(gamePanel); // add the game panel to the window
+
+    gamePanel.requestFocusInWindow();
     // start the game clock
     gamePanel.startGameThread();
 

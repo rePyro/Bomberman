@@ -3,14 +3,39 @@ public class Bomb extends Tile
 {
   // variables
   private int fuse;
+  private int row;
+  private int col;
+  private int power;
   
-  public Bomb() {
+  public Bomb(int row, int col) {
     super("Bomb", true, true);
-    fuse = 5; // TODO: set fuse to appropiate number
+    this.row = row;
+    this.col = col;
+    fuse = 2; // TODO: set fuse to appropiate number
+    power = 2;
+  }
+  public void tickFuse() {
+    fuse--;
+  }
+  public void detonate() {
+    this.fuse = 0;
+}
+
+  public int getFuse() {
+    return fuse;
+  }
+  public int getPower() {
+    return power;
+  }
+  public int getRow() {
+    return row;
+  }
+  public int getCol() {
+    return col;
   }
 
+
   // TODO: make Bomb functions with gameticks
-  /*
   public boolean tryBreak(Tile[][] field, int row, int col) {
     try {
       if (field[row][col].getBreakable()) {
@@ -24,5 +49,14 @@ public class Bomb extends Tile
       return false;
     }
   }
-  */
+
+  public void explode(Tile[][] field) {
+    for (int r = 1; r <= power; r++)
+    {if (tryBreak(field, row +r, col)) {
+      
+
+    }}
+
+  }
+
 }

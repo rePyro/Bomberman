@@ -19,7 +19,9 @@ public class GamePanel extends JPanel implements Runnable {
   private int FPS = 60; // frames per second
   private Player player1;
   private Player player2;
+  
   private Map map; // map object
+  private Enemy enemy1;
   
   KeyHandler keyHandler = new KeyHandler(); // key handler for input
   Thread gameThread; // thread for the game loop
@@ -36,6 +38,9 @@ public class GamePanel extends JPanel implements Runnable {
     this.map = map;
     this.player1 = player1;
     this.player2 = player2;
+    //enemy stuff, still jank
+    this.enemy1 = new Enemy(map, 1, 1);
+    enemy1.setTarget(5,5);
   }
 
   public void startGameThread() {
@@ -76,6 +81,7 @@ public class GamePanel extends JPanel implements Runnable {
 
       if (gameTickTimer >= 1000000000) { // 1 tick = 1 second
         map.gameTick(); // update the map
+        enemy1.randomMove(); // enemy random movement
         
         gameTickTimer = 0; // reset the game tick timer
       }
@@ -115,20 +121,21 @@ public class GamePanel extends JPanel implements Runnable {
       keyHandler.resetSpaceJustPressed();
     }
     //Actions that require life
-    if (keyHandler.getEnterJustPressed()) {
+    if (keyHandler.getEJustPressed()) {
     if (player1.isAlive()) {
       map.addBomb(player1.getRow(), player1.getCol());
       System.out.println("SpawnBomb");
+    } else {System.out.println("heh ded men no get bomb (p1)");}
+      keyHandler.resetEJustPressed();
     }
-    else {System.out.println("heh ded men no get bomb (p1)");}
-    if (player2.isAlive()) {
+    if (keyHandler.getEnterJustPressed()) {
+      if (player2.isAlive()) {
       map.addBomb(player2.getRow(), player2.getCol());
       System.out.println("SpawnBomb");
-    }
-    else {System.out.println("heh ded men no get bomb (p2)");}
+    } else {System.out.println("heh ded men no get bomb (p2)");}
       keyHandler.resetEnterJustPressed();
-      
     }
+    
     if (player1.isAlive()) { // if player 1 is alive
     if (keyHandler.getUpPressed() == true && player1.canMoveUp(map) == true) { // if the up key is pressed
       player1.setY(player1.getY() - player1.getSpeed());
@@ -148,7 +155,6 @@ public class GamePanel extends JPanel implements Runnable {
   }
   
   if (player2.isAlive()) {
-
     if (keyHandler.getUpPressed2() == true && player2.canMoveUp(map) == true) { // if the up key is pressed
       player2.setY(player2.getY() - player2.getSpeed());
       //System.out.println("test: moving up");
@@ -206,6 +212,12 @@ public class GamePanel extends JPanel implements Runnable {
     g2.setColor(Color.darkGray);
     g2.fillRect(player2.getX(), player2.getY(), tileSize, tileSize); // fill the square with white                              
   } 
+  if (enemy1.isAlive()) {
+    g2.setColor(Color.magenta);
+    g2.fillRect(enemy1.colToX(),enemy1.rowToY(), tileSize, tileSize);
+    g2.setColor(Color.lightGray);
+    g2.fillRect(enemy1.getX(), enemy1.getY(), tileSize, tileSize); // fill the square with white          
+  }
   g2.dispose(); 
 }
 }

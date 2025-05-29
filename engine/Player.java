@@ -11,15 +11,20 @@ public class Player
   private int rowCount;
   private int tileSize;
   private boolean alive = true; // player is alive by default
+  private Tile[][] field; // the field of the map, used for collision detection
 
 //constructor
-  public Player(Map map, int row, int col) {playerCount++;
+  public Player(Map map, int row, int col) {
+    playerCount++;
     playerNumber = playerCount; // assign the current player count to this player
     x = (int)((col+0.5)*48);
     y = (int)((row+0.5)*48);
+    this.row = row;
+    this.col = col;
+    tileSize = 48; // size of the tile in pixels
     speed = 4;
     rowCount = map.getField().length;
-    
+    field = map.getField(); // get the field from the map
   }
   public Player(Map map) {
     playerCount++;
@@ -40,6 +45,7 @@ public class Player
     y = (int)((row+0.5)*48);
     speed = 4;
     rowCount = map.getField().length;
+    field = map.getField(); // get the field from the map
   }
   public void killPlayer() {
     alive = false; // set player to dead
@@ -104,6 +110,19 @@ public class Player
   public int colToX() {
     return (int)((col+0.5)*48);
   }
+  //Lazy
+  public boolean withinR(int r) {
+    if (0 <= r && r < field.length) {
+      return true;
+    }
+    else return false;
+  }
+  public boolean withinC(int c) {
+    if (0 <= c && c < field[0].length) {
+      return true;
+    }
+    else return false;
+  }
   //Collision detection
   public boolean checkUp(Map map) {
     return map.isFree(row-1, col);
@@ -120,6 +139,7 @@ public class Player
   //Movement
   private int tileLeniency = 20;//margin of error for tile movement, so that the player can move even if they are not exactly on the tile
   public boolean canMoveUp(Map map) {
+    if (withinR(row)) {
     if (rowToY() < y) {
       return true;
     }
@@ -130,21 +150,30 @@ public class Player
     else {
       return false;
     }
+    }
+    else {
+      return false; // if the row is out of bounds, return false
+    }
   }
   public boolean canMoveDown(Map map) {
+    if (withinR(row)) {
     if (rowToY() > y) {
       return true;
     }
     else if (checkDown(map) == true && Math.abs(colToX() - x) < tileLeniency) {
       x = colToX();
       return true;
-    
     }
     else {
       return false;
     }
+    }
+    else {
+      return false; // if the row is out of bounds, return false
+    }
   }
   public boolean canMoveLeft(Map map) {
+    if (withinC(col)) {
     if (colToX() < x) {
       return true;
     }
@@ -155,8 +184,13 @@ public class Player
     else {
       return false;
     }
+    }
+    else {
+      return false; // if the column is out of bounds, return false
+    }
   }
   public boolean canMoveRight(Map map) {
+    if (withinC(col)) {
     if (colToX() > x) {
       return true;
     }
@@ -166,6 +200,10 @@ public class Player
     }
     else {
       return false;
+    }
+    }
+    else {
+      return false; // if the column is out of bounds, return false
     }
   }
   

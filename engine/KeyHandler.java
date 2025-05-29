@@ -5,8 +5,9 @@ public class KeyHandler implements KeyListener {
     // variables
     private boolean upPressed, downPressed, leftPressed, rightPressed; // movement keys
     private boolean upPressed2, downPressed2, leftPressed2, rightPressed2; // movement keys
-    private boolean enterPressed, spacePressed; // action keys
+    private boolean enterPressed, spacePressed, ePressed; // action keys
     private boolean enterJustPressed = false;
+    private boolean eJustPressed = false;
     private boolean spaceJustPressed = false;
 
     @Override
@@ -21,19 +22,17 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_S) { downPressed = true; }
         if (code == KeyEvent.VK_D) { rightPressed = true; }
        
-        if (code == KeyEvent.VK_U) { upPressed2 = true; }
-        if (code == KeyEvent.VK_H) { leftPressed2 = true; }
-        if (code == KeyEvent.VK_J) { downPressed2 = true; }
-        if (code == KeyEvent.VK_K) { rightPressed2 = true; }
+        if (code == KeyEvent.VK_UP) { upPressed2 = true; }
+        if (code == KeyEvent.VK_LEFT) { leftPressed2 = true; }
+        if (code == KeyEvent.VK_DOWN) { downPressed2 = true; }
+        if (code == KeyEvent.VK_RIGHT) { rightPressed2 = true; }
 
-
-        if (code == KeyEvent.VK_ENTER && !enterPressed) {
-        enterJustPressed = true; // Only true on the frame the key is pressed
-        }
+        // Only true on the frame the key is pressed
+        if (code == KeyEvent.VK_ENTER && !enterPressed) { enterJustPressed = true; } 
         if (code == KeyEvent.VK_ENTER) { enterPressed = true; }
-        if (code == KeyEvent.VK_SPACE && !spacePressed) { 
-        spaceJustPressed = true; 
-        }
+        if (code == KeyEvent.VK_E && !ePressed) { eJustPressed = true; } 
+        if (code == KeyEvent.VK_E) { ePressed = true; }
+        if (code == KeyEvent.VK_SPACE && !spacePressed) { spaceJustPressed = true; }
         if (code == KeyEvent.VK_SPACE) { spacePressed = true; }
        }
 
@@ -45,11 +44,12 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_A) { leftPressed = false; }
         if (code == KeyEvent.VK_S) { downPressed = false; }
         if (code == KeyEvent.VK_D) { rightPressed = false; }
-        if (code == KeyEvent.VK_U) { upPressed2 = false; }
-        if (code == KeyEvent.VK_H) { leftPressed2 = false; }
-        if (code == KeyEvent.VK_J) { downPressed2 = false; }
-        if (code == KeyEvent.VK_K) { rightPressed2 = false; }
+        if (code == KeyEvent.VK_UP) { upPressed2 = false; }
+        if (code == KeyEvent.VK_LEFT) { leftPressed2 = false; }
+        if (code == KeyEvent.VK_DOWN) { downPressed2 = false; }
+        if (code == KeyEvent.VK_RIGHT) { rightPressed2 = false; }
         if (code == KeyEvent.VK_ENTER) { enterPressed = false; }
+        if (code == KeyEvent.VK_E) { ePressed = false; }
         if (code == KeyEvent.VK_SPACE) { spacePressed = false; }
     }
 
@@ -64,12 +64,15 @@ public class KeyHandler implements KeyListener {
     public boolean getRightPressed2() { return rightPressed2; }
     // Accessors for action keys
     public boolean getEnterPressed() { return enterPressed; }
+    public boolean getEPressed() { return ePressed; }
     public boolean getSpacePressed() { return spacePressed; }
     // Accessor
-public boolean getEnterJustPressed() { return enterJustPressed; }
-public void resetEnterJustPressed() { enterJustPressed = false; }
-public boolean getSpaceJustPressed() { return spaceJustPressed; }
-public void resetSpaceJustPressed() { spaceJustPressed = false; }
+    public boolean getEnterJustPressed() { return enterJustPressed; }
+    public void resetEnterJustPressed() { enterJustPressed = false; }
+    public boolean getEJustPressed() { return eJustPressed; }
+    public void resetEJustPressed() { eJustPressed = false; }
+    public boolean getSpaceJustPressed() { return spaceJustPressed; }
+    public void resetSpaceJustPressed() { spaceJustPressed = false; }
 
     // temp
     public void setDownPressed(boolean b) {

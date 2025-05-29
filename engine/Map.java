@@ -10,7 +10,7 @@ public class Map
   private ArrayList<BombFireGroup> bombFireList;
   // constructor
   public Map() {
-    field = new Tile[9][15]; // initialize empty field
+    field = new Tile[19][15]; // initialize empty field 9,15
     tileSize = 48;
     bombList = new ArrayList<Bomb>();
     bombFireList = new ArrayList<BombFireGroup>();

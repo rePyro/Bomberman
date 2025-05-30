@@ -21,7 +21,8 @@ public class Player
   private BufferedImage idleU1, idleU2, idleD1, idleD2, idleL1, idleL2, idleR1, idleR2; // idle sprites
   private BufferedImage up1, up2, down1, down2, left1, left2, right1, right2; // movement sprites
   private BufferedImage ded1, ded2, ded3, ded4, ded5, ded6, ded7, ded8, ded9; // death sprites
-//constructor
+
+  //constructor
   public Player(Map map, int row, int col) {
     playerCount++;
     playerNumber = playerCount; // assign the current player count to this player
@@ -62,14 +63,22 @@ public class Player
   }
   public void respawn(Map map) {
     alive = true; // set player to alive
-    map.setTile(1, 1, new SpawnTile()); // clear the tile where the player was
-          row = 1;
-          col = 1;
-    this.row = row;
-    this.col = col;
-    x = (int)((col+0.5)*48);
-    y = (int)((row+0.5)*48);
+    if (playerNumber == 1) {
+      map.setTile(1, 1, new SpawnTile()); // clear the tile
+      this.row = 1;
+      this.col = 1;
+      x = (int)((col+0.5)*48);
+      y = (int)((row+0.5)*48);
+    } else {
+      map.setTile(field.length - 2, field[0].length - 2, new SpawnTile()); // clear the tile
+      this.row = field.length - 2;
+      this.col = field[0].length - 2;
+      x = (int)((col+0.5)*48);
+      y = (int)((row+0.5)*48);
+    }
   }
+  
+  //rendering
   public void getPlayerImage() {
     String spriteName;
     if (playerNumber == 1) {
@@ -108,6 +117,57 @@ public class Player
       System.out.println("Error loading player images!"); // print an error message
     }
   }
+
+  private KeyHandler keyHandler = new KeyHandler();
+  private int spriteNumber = 0; // variable to help cycle animations, range 0-3
+  private int spriteCounter = 0; // variable incrementing every frame
+  public int getSpriteNumber() { return spriteNumber; }
+  public int getSpriteCounter() { return spriteCounter; }
+  public void setSpriteNumber(int input) { spriteNumber = input; }
+  public void setSpriteCounter(int input) { spriteCounter = input; }
+
+  public void draw(Graphics2D g2) {
+    Buffered Image image = null; // variable to hold the image to be drawn
+    if (alive) {
+      if (keyHandler.getDownPressed()) {
+        direction = "down";
+        if (spriteNumber == 0) { image = down1; } 
+        else if (spriteNumber == 2) { image = down2; }
+        else { image = idleD1; }
+      } else if (keyHandler.getUpPressed()) {
+        direction = "up";
+        if (spriteNumber == 0) { image = up1; } 
+        else if (spriteNumber == 2) { image = up2; }
+        else { image = idleU1; }
+      } else if (keyHandler.getLeftPressed()) {
+        direction = "left";
+        if (spriteNumber == 0) { image = left1; } 
+        else if (spriteNumber == 2) { image = left2; }
+        else { image = idleL1; }
+      } else if (keyHandler.getRightPressed()) {
+        direction = "right";
+        if (spriteNumber == 0) { image = right1; } 
+        else if (spriteNumber == 2) { image = right2; }
+        else { image = idleR1; }
+      } else {
+        switch (direction) {
+          case "up": if (spriteNumber % 2 == 0) { image = idleU1; } else { image = idleU2; } break;
+          case "down": if (spriteNumber % 2 == 0) { image = idleD1; } else { image = idleD2; } break;
+          case "left": if (spriteNumber % 2 == 0) { image = idleL1; } else { image = idleL2; } break;
+          case "right": if (spriteNumber % 2 == 0) { image = idleR1; } else { image = idleR2; } break;
+        }
+      }
+    }
+  }
+  
+  public void updateSpriteVals() {
+    spriteNumber++;
+    if (spriteNumber == 10) { // if 10 frames passed, flip sprite counter
+      spriteCounter++;
+      if (spriteCounter == 4) { spriteCounter = 0; } // cycle back
+    }
+  }
+
   //accessors
   public int getPlayerNumber() {
     return playerNumber; // return the player number

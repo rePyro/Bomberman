@@ -73,7 +73,7 @@ public class GamePanel extends JPanel implements Runnable {
       if (delta >= 1) { // if enough time has passed
         // UPDATE: update information, ex. player position, map, etc.
         update();
-        //player1.update();
+        player1.updateSpriteVals();
         //player2.update();
 
         // DRAW: paint the new screen

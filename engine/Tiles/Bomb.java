@@ -1,6 +1,5 @@
 // package declarations and imports here;
-public class Bomb extends Tile
-{
+public class Bomb extends Tile {
   // variables
   private int fuse;
   private int row;
@@ -14,13 +13,26 @@ public class Bomb extends Tile
     fuse = 2; // TODO: set fuse to appropiate number
     power = 2;
   }
+  //clone
+  @Override
+public Bomb clone() {
+    Bomb cloned = (Bomb) super.clone();
+    // Copy primitive fields (already done by super.clone()), but do it explicitly if needed:
+    cloned.fuse = this.fuse;
+    cloned.row = this.row;
+    cloned.col = this.col;
+    cloned.power = this.power;
+    // If Bomb ever contains mutable objects, clone them here as well.
+    return cloned;
+}
+//updates
   public void tickFuse() {
     fuse--;
   }
   public void detonate() {
     this.fuse = 0;
 }
-
+// accessors
   public int getFuse() {
     return fuse;
   }
@@ -33,8 +45,6 @@ public class Bomb extends Tile
   public int getCol() {
     return col;
   }
-
-
   // TODO: make Bomb functions with gameticks
   public boolean tryBreak(Tile[][] field, int row, int col) {
     try {
@@ -49,7 +59,6 @@ public class Bomb extends Tile
       return false;
     }
   }
-
   public void explode(Tile[][] field) {
     for (int r = 1; r <= power; r++)
     {if (tryBreak(field, row +r, col)) {

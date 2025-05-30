@@ -6,9 +6,11 @@ public class KeyHandler implements KeyListener {
     private boolean upPressed, downPressed, leftPressed, rightPressed; // movement keys
     private boolean upPressed2, downPressed2, leftPressed2, rightPressed2; // movement keys
     private boolean enterPressed, spacePressed, ePressed; // action keys
+    private boolean pPressed; // Prediction Key (WIP)
     private boolean enterJustPressed = false;
     private boolean eJustPressed = false;
     private boolean spaceJustPressed = false;
+    private boolean pJustPressed = false; // pause key
 
     @Override
     public void keyTyped(KeyEvent e) {} // purposely empty, not used
@@ -34,6 +36,8 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_E) { ePressed = true; }
         if (code == KeyEvent.VK_SPACE && !spacePressed) { spaceJustPressed = true; }
         if (code == KeyEvent.VK_SPACE) { spacePressed = true; }
+        if (code == KeyEvent.VK_P && !pPressed) { pJustPressed = true; }
+        if (code == KeyEvent.VK_P) { pPressed = true; }
        }
 
     @Override
@@ -51,6 +55,7 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_ENTER) { enterPressed = false; }
         if (code == KeyEvent.VK_E) { ePressed = false; }
         if (code == KeyEvent.VK_SPACE) { spacePressed = false; }
+        if (code == KeyEvent.VK_P) { pPressed = false; }
     }
 
     // accessors
@@ -73,6 +78,11 @@ public class KeyHandler implements KeyListener {
     public void resetEJustPressed() { eJustPressed = false; }
     public boolean getSpaceJustPressed() { return spaceJustPressed; }
     public void resetSpaceJustPressed() { spaceJustPressed = false; }
+
+    // P key for prediction (WIP)
+    public boolean getPPressed() { return pPressed; }
+    public boolean getPJustPressed() { return pJustPressed; }
+    public void resetPJustPressed() { pJustPressed = false; }
 
     // temp
     public void setDownPressed(boolean b) {

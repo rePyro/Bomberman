@@ -84,8 +84,9 @@ public class GamePanel extends JPanel implements Runnable {
       }
 
       if (gameTickTimer >= 1000000000) { // 1 gameTick = 1 second
-        map.gameTick(); // update the map
         enemy1.takeAction(); // enemy random movement
+        map.gameTick(); // update the map
+        
         
         gameTickTimer = 0; // reset the game tick timer
       }
@@ -106,6 +107,7 @@ public class GamePanel extends JPanel implements Runnable {
   public void update() {
     player1.deathCheck(map); // check if player 1 is dead
     player2.deathCheck(map); // check if player 2 is dead
+    enemy1.deathCheck(map); // check if enemy 1 is dead
     //keyHandler.setLeftPressed(true);
     
     if (keyHandler.getSpaceJustPressed()) {

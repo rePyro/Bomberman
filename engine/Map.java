@@ -8,7 +8,7 @@ public class Map
   private int tileSize;
   private ArrayList<Bomb> bombList;
   private ArrayList<BombFireGroup> bombFireList;
-  private int fireFuse = 3; // default fuse for fire, can be changed later
+  private int fireFuse = 4; // default fuse for fire, can be changed later
   private int bombFuse = 2; // default fuse for bomb, can be changed later
   private int bombPower = 2; // default power for bomb, can be changed later
   // constructor
@@ -180,7 +180,6 @@ public void addBombFire(BombFireGroup group, int row, int col) {
         BombFire oldFire = (BombFire) oldTile;
         BombFireGroup oldGroup = oldFire.getGroup();
         if (oldGroup != null) {
-            System.out.println("Removing old fire from group");
             oldGroup.getFires().remove(oldFire);
         }
     }

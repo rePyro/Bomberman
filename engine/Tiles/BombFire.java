@@ -29,6 +29,17 @@ public int getFuse() {
     this.group = group;
     group.addFire(this);
   }
+  // clone
+  @Override
+public BombFire clone() {
+    BombFire cloned = (BombFire) super.clone();
+    // Do not clone the group reference here; it will be set by BombFireGroup.clone()
+    cloned.fuse = this.fuse;
+    cloned.row = this.row;
+    cloned.col = this.col;
+    cloned.group = null; // Will be set by BombFireGroup.clone()
+    return cloned;
+}
   public int getRow() {
     return row;
   }

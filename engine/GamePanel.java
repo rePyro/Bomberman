@@ -22,6 +22,7 @@ public class GamePanel extends JPanel implements Runnable {
   
   private Map map; // map object
   private Enemy enemy1;
+  private SuperMap superMap; // super map object, for future use
   
   KeyHandler keyHandler = new KeyHandler(); // key handler for input
   Thread gameThread; // thread for the game loop
@@ -41,6 +42,7 @@ public class GamePanel extends JPanel implements Runnable {
     //enemy stuff, still jank
     this.enemy1 = new Enemy(map, 1, 1);
     enemy1.setTarget(5,5);
+    this.superMap = new SuperMap(map); // create a new super map object
   }
 
   public void startGameThread() {
@@ -70,7 +72,9 @@ public class GamePanel extends JPanel implements Runnable {
       lastTime = currentTime;
       if (delta >= 1) { // if enough time has passed
         // UPDATE: update information, ex. player position, map, etc.
-        update(); 
+        update();
+        //player1.update();
+        //player2.update();
 
         // DRAW: paint the new screen
         repaint();
@@ -79,9 +83,10 @@ public class GamePanel extends JPanel implements Runnable {
         //System.out.println("test: upd + rep'd");
       }
 
-      if (gameTickTimer >= 1000000000) { // 1 tick = 1 second
+      if (gameTickTimer >= 1000000000) { // 1 gameTick = 1 second
+        enemy1.takeAction(); // enemy random movement
         map.gameTick(); // update the map
-        enemy1.randomMove(); // enemy random movement
+        
         
         gameTickTimer = 0; // reset the game tick timer
       }
@@ -102,6 +107,7 @@ public class GamePanel extends JPanel implements Runnable {
   public void update() {
     player1.deathCheck(map); // check if player 1 is dead
     player2.deathCheck(map); // check if player 2 is dead
+    enemy1.deathCheck(map); // check if enemy 1 is dead
     //keyHandler.setLeftPressed(true);
     
     if (keyHandler.getSpaceJustPressed()) {
@@ -119,6 +125,12 @@ public class GamePanel extends JPanel implements Runnable {
         System.out.println("Player 2 is alive, cannot respawn");
       }
       keyHandler.resetSpaceJustPressed();
+    }
+    if (keyHandler.getPJustPressed()) {
+      System.out.println("test: p just pressed");
+      superMap.makePrediction(); // make a prediction of the map
+      superMap.printPrediction(); // print the prediction
+      keyHandler.resetPJustPressed();
     }
     //Actions that require life
     if (keyHandler.getEJustPressed()) {

@@ -8,6 +8,9 @@ public class Map
   private int tileSize;
   private ArrayList<Bomb> bombList;
   private ArrayList<BombFireGroup> bombFireList;
+  private int fireFuse = 4; // default fuse for fire, can be changed later
+  private int bombFuse = 2; // default fuse for bomb, can be changed later
+  private int bombPower = 2; // default power for bomb, can be changed later
   // constructor
   public Map() {
     field = new Tile[9][15]; // initialize empty field
@@ -43,6 +46,47 @@ public class Map
       }
     }
   }
+  //Clone/DeepCopy
+  public Map(Map other) {
+    // Deep copy the field (initially with shallow clones)
+    this.field = new Tile[other.field.length][other.field[0].length];
+    for (int r = 0; r < field.length; r++) {
+        for (int c = 0; c < field[0].length; c++) {
+            this.field[r][c] = other.field[r][c].clone();
+        }
+    }
+    this.tileSize = other.tileSize;
+
+    // Clone bombs
+    this.bombList = new ArrayList<>();
+    for (Bomb b : other.bombList) {
+        this.bombList.add(b.clone());
+    }
+
+    // Clone BombFireGroups and BombFires (order matters)
+    this.bombFireList = new ArrayList<>();
+    for (int g = 0; g < other.bombFireList.size(); g++) {
+        BombFireGroup origGroup = other.bombFireList.get(g);
+        BombFireGroup clonedGroup = origGroup.clone();
+        this.bombFireList.add(clonedGroup);
+
+        // For each fire in the group, update the field reference if it matches the original
+        for (int f = 0; f < origGroup.getFires().size(); f++) {
+            BombFire origFire = origGroup.getFires().get(f);
+            BombFire clonedFire = clonedGroup.getFires().get(f);
+            int row = origFire.getRow();
+            int col = origFire.getCol();
+            // Only replace if the original fire is at this location
+            if (other.field[row][col] == origFire) {
+                this.field[row][col] = clonedFire;
+            }
+        }
+    }
+
+    this.fireFuse = other.fireFuse;
+    this.bombFuse = other.bombFuse;
+    this.bombPower = other.bombPower;
+}
   //GAME TICK
   public void gameTick() {
     // check for explosions
@@ -50,7 +94,6 @@ public class Map
     // check for bomb fires
     fireTick();
   }
-
   // accessors
   public Tile[][] getField() {
     return field;
@@ -63,6 +106,24 @@ public class Map
       return false; // out of bounds
     }
     return !field[row][col].getSolid();
+  }
+  public int getTileSize() {
+    return tileSize;
+  }
+  public ArrayList<Bomb> getBombList() {
+    return bombList;
+  }
+  public ArrayList<BombFireGroup> getBombFireList() {
+    return bombFireList;
+  }
+  public int getFireFuse() {
+    return fireFuse;
+  }
+  public int getBombFuse() {
+    return bombFuse;
+  }
+  public int getBombPower() {
+    return bombPower;
   }
   // mutators
   public void setTile(int row, int col, Tile tile) {
@@ -88,9 +149,6 @@ public class Map
     }
     else return false;
   }
-
-
-
   //Fire
   public void fireTick() {
     for (int i = bombFireList.size() - 1; i >= 0; i--) {
@@ -108,11 +166,9 @@ public class Map
         }
     }
 }
-
 public void addBombFireGroup(BombFireGroup group) {
     bombFireList.add(0, group);
   }
-
   //BombFire
   public void addBombFire(int row, int col) {
     Tile fire = new BombFire(row, col);
@@ -124,7 +180,6 @@ public void addBombFire(BombFireGroup group, int row, int col) {
         BombFire oldFire = (BombFire) oldTile;
         BombFireGroup oldGroup = oldFire.getGroup();
         if (oldGroup != null) {
-            System.out.println("Removing old fire from group");
             oldGroup.getFires().remove(oldFire);
         }
     }
@@ -132,14 +187,12 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     setTile(row, col, fire);                       // place it on the map
     group.getFires().add(fire);                    // add to group
 }
-
   //EXPLOSIONS
   public void addBomb(int row, int col) {
     Bomb bomb = new Bomb(row, col);
     setTile(row, col, bomb);
     bombList.add(bomb);
 }
-
   public void explodeCheck() {
     // 1. Tick all bombs ONCE
     for (int i = 0; i < bombList.size(); i++) {
@@ -147,7 +200,6 @@ public void addBombFire(BombFireGroup group, int row, int col) {
             bombList.get(i).tickFuse();
         }
     }
-
     // 2. Now, repeatedly process all bombs with fuse == 0 (chain reactions)
     boolean exploded;
     do {
@@ -155,7 +207,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
         for (int i = bombList.size() - 1; i >= 0; i--) {
             if (bombList.get(i).getFuse() == 0) {
                 // Run Explosion Process
-                BombFireGroup group = new BombFireGroup(5);
+                BombFireGroup group = new BombFireGroup(fireFuse);
                 addBombFireGroup(group);
                 Bomb bomb = bombList.get(i);
                 blowUp(bomb, 1, group);
@@ -169,7 +221,6 @@ public void addBombFire(BombFireGroup group, int row, int col) {
         }
     } while (exploded);
 }
-
   public void explode(Bomb bomb) {
     //Run Explosion Process
     BombFireGroup group = new BombFireGroup(5);
@@ -186,7 +237,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
       int r = bomb.getRow(); int c = bomb.getCol();
       if (withinR(r-num) && withinC(c)) {
       if (field[r-num][c].getSolid() == false) {
-        addBombFire(group, r-num, c);
+        addBombFire(group, r-num, c); //Adds a fire to this location
         blowUp(bomb, num+1, group);
             }
             else if (field[r-num][c] instanceof Bomb) {
@@ -194,12 +245,11 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     Bomb targetBomb = (Bomb)field[r-num][c];
     targetBomb.detonate();
 } else if (field[r-num][c].getBreakable() == true) {
-   setTile(r-num, c, new Tile());
+   setTile(r-num, c, new Tile()); //This "explodes" walls
 }
           }
         }
       }
-  
   public void blowDown(Bomb bomb, int num, BombFireGroup group) {
     if (num <= bomb.getPower()) {
       int r = bomb.getRow(); int c = bomb.getCol();
@@ -236,7 +286,6 @@ public void addBombFire(BombFireGroup group, int row, int col) {
           }
         }
       }
-
   public void blowRight(Bomb bomb, int num, BombFireGroup group) {
     if (num <= bomb.getPower()) {
       int r = bomb.getRow(); int c = bomb.getCol();
@@ -255,9 +304,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
           }
         }
       }
-
-
-  // visual aid
+// printMap() method for debugging and visual aid
   public void printMap() {
     for (int row = 0; row < field.length; row++) {
       for (int col = 0; col < field[0].length; col++) {
@@ -267,8 +314,12 @@ public void addBombFire(BombFireGroup group, int row, int col) {
           System.out.print("S");
         } else if (field[row][col] instanceof SpawnTile) {
           System.out.print("A");
+        }  else if (field[row][col] instanceof Bomb) {
+          System.out.print("B");
+        } else if (field[row][col] instanceof BombFire) {
+          System.out.print("F");
         } else if (field[row][col] instanceof Tile) {
-          System.out.print("T");
+          System.out.print(" ");
         }
         System.out.print(" ");
       }

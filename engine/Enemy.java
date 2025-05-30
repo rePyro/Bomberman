@@ -36,6 +36,8 @@ public class Enemy extends Player {
     }
     // Movement methods
     public void takeAction() {
+        if (isAlive()) {
+            superMap.makePrediction();
         if (canPlaceBomb() && worthPlacingBomb()) {
             System.out.println("Enemy places a bomb at (" + getRow() + ", " + getCol() + ")");
             map.addBomb(getRow(), getCol()); // Place a bomb at the enemy's current position
@@ -45,20 +47,23 @@ public class Enemy extends Player {
         }
         setTarget();
         if (inDanger(map)) {
-            System.out.println("Enemy is in danger, trying to escape");
+            //System.out.println("Enemy is in danger, trying to escape");
             escape(); // Try to escape if in danger
         } else if (isTrapped(map, getRow(), getCol())) {
             System.out.println("Enemy is trapped, trying to find a way out");
             escape(); // Try to escape if trapped
         } else {
-            System.out.println("Enemy is safe, moving towards target");
+            //System.out.println("Enemy is safe, moving towards target");
         }
         pathFind();
+    } else {
+        System.out.println("Enemy is dead, womp womp");
     }
+    System.out.println("");
+}
     public void pathFind() {
     if (this.getRow() < targetRow && canMoveDown(map)) {
         this.incRow(1); // Move down
-        System.out.println("Enemy pathfinding towards target: (" + targetRow + ", " + targetCol + ")");
     } else if (this.getRow() > targetRow && canMoveUp(map)) {
         this.incRow(-1); // Move up
     } else if (this.getCol() < targetCol && canMoveRight(map)) {
@@ -112,7 +117,7 @@ public class Enemy extends Player {
     List<Map> prediction = superMap.getPrediction();
     for (int i = ticks; i < prediction.size(); i++) {
         if (danger(prediction.get(i), target.getRow(), target.getCol())) {
-            System.out.println("Enemy needs to move to avoid danger at tick " + i);
+            //System.out.println("Enemy needs to move to avoid danger at tick " + i);
             return i; // Enemy is in danger at some point in the future 
         }
     }
@@ -124,7 +129,7 @@ public class Enemy extends Player {
         List<Map> prediction = superMap.getPrediction();
         for (int i = ticks; i < prediction.size(); i++) {
             if (danger(prediction.get(i), target.getRow(), target.getCol())) {
-                System.out.println("Enemy needs to move to avoid danger at tick " + i);
+                //System.out.println("Enemy needs to move to avoid danger at tick " + i);
                 return i; // Enemy is in danger at some point in the future 
             }
     }
@@ -137,7 +142,7 @@ public class Enemy extends Player {
             Map predictedMap = prediction.get(i);
             Map priorMap = (i > 0) ? prediction.get(i - 1) : null;
             if (inDanger(predictedMap)) {
-                System.out.println("Enemy needs to move by " + i + " ticks to avoid danger");
+                //System.out.println("Enemy needs to move by " + i + " ticks to avoid danger");
                 return i; // Return the number of ticks needed to avoid danger
             }
         }
@@ -208,13 +213,13 @@ public class Enemy extends Player {
         }
         List<Coordinate> moves = viableMoves(superMap.getPrediction(currentTick+1), row, col);
             for (int i = moves.size()-1; i>=0; i--) {
-                 if (hasBestMove(currentTick + 2, moves.get(i).getRow(), moves.get(i).getCol())) {
+                 if (hasBestMove(currentTick + 1, moves.get(i).getRow(), moves.get(i).getCol())) {
                     return true; // There is a move that leads to full safety in the future
                 }
             }
             for (Coordinate move : moves) {
                 if (hasEventualBestMove(currentTick + 1, move.getRow(), move.getCol())) {
-                    System.out.println("Enemy can escape from " + move + " at tick " + (currentTick + 2));
+                    //System.out.println("Enemy can escape from " + move + " at tick " + (currentTick + 2));
                     return true; // There is a move that leads to full safety in the future
                 }
             }
@@ -226,7 +231,7 @@ public class Enemy extends Player {
     }
     List<Coordinate> moves = viableMoves(superMap.getPrediction(currentTick + 1), row, col);
     for (int i = moves.size() - 1; i >= 0; i--) {
-        if (hasBestMove(superMap, currentTick + 2, moves.get(i).getRow(), moves.get(i).getCol())) {
+        if (hasBestMove(superMap, currentTick + 1, moves.get(i).getRow(), moves.get(i).getCol())) {
             return true; // There is a move that leads to full safety in the future
         }
     }
@@ -242,13 +247,16 @@ public class Enemy extends Player {
     for (Coordinate move : moves) {
         if (isBestMove(currentTick, move)) {
             bestMoves.add(move); // Add moves that lead to complete safety
+            System.out.println("best move found");
         }
     }
     if (bestMoves.size() < 1) {
-        for (Coordinate move : moves) {
+        System.out.println("No best move found, regressing");
+        for (int i = 0; i < moves.size(); i++) {
             // Recurse with the move's coordinates and incremented tick
-            List<Coordinate> nextMoves = viableMoves(superMap.getPrediction(currentTick + 1), move.getRow(), move.getCol());
-            eventualBestMove(nextMoves, bestMoves, currentTick + 1, move.getRow(), move.getCol());
+            System.out.println("checking move "+(i));
+            List<Coordinate> nextMoves = viableMoves(superMap.getPrediction(currentTick + 1), moves.get(i).getRow(), moves.get(i).getCol());
+            eventualBestMove(nextMoves, bestMoves, currentTick + 1, moves.get(i).getRow(), moves.get(i).getCol());
         }
     }
 }
@@ -257,7 +265,7 @@ public class Enemy extends Player {
         List<Coordinate> bestMoves = new ArrayList<Coordinate>();
         eventualBestMove(moves, bestMoves, currentTick, row, col);
         if (bestMoves.size() < 1) {
-            System.out.println("Enemy has no best moves available at tick " + currentTick);
+            //System.out.println("Enemy has no best moves available at tick " + currentTick);
             return new Coordinate(getRow(), getCol()); // Stay in place if no best moves are available
         }
         else {
@@ -276,6 +284,10 @@ public class Enemy extends Player {
         }
     }
     public boolean canPlaceBomb() {
+        if (isTrapped(map, getRow(), getCol())) {
+            System.out.println("Enemy is trapped, should not place a bomb at (" + getRow() + ", " + getCol() + ")");
+            return false; // Enemy is trapped, cannot place a bomb
+        }
         if (couldEscapeBomb()) {
             System.out.println("Enemy can place a bomb safely at (" + getRow() + ", " + getCol() + ")");
             return true; // Enemy can place a bomb safely

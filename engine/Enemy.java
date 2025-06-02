@@ -7,14 +7,16 @@ public class Enemy extends Player {
     int targetCol;
     Map map;
     SuperMap superMap;
+    KeyHandler keyHandler;
 
-    public Enemy(Map map, int row, int col) {
-        super(map, row, col);
+    public Enemy(Map map, int row, int col, KeyHandler keyHandler) {
+        super(map, row, col, keyHandler);
         this.desire = 0; // Initialize desire to 0
         this.targetRow = row; // Set targetRow to current row
         this.targetCol = col; // Set targetCol to current column
         this.map = map; // Store the map reference
         this.superMap = new SuperMap(map); // Initialize SuperMap with the current map
+        this.keyHandler = keyHandler; // Initialize keyHandler
     }
     // Weighting methods for actions
     public void setDesire(int desire) {

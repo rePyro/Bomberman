@@ -28,7 +28,7 @@ public class GamePanel extends JPanel implements Runnable {
   Thread gameThread; // thread for the game loop
 
   // constructor
-  public GamePanel(Map map, Player player1, Player player2) {
+  public GamePanel(Map map) {
     this.setPreferredSize(new Dimension(screenWidth, screenHeight));
     this.setBackground(Color.black);
     this.setDoubleBuffered(true); // double buffering for smoother graphics
@@ -37,12 +37,12 @@ public class GamePanel extends JPanel implements Runnable {
     //this.requestFocusInWindow();
     
     this.map = map;
-    this.player1 = player1;
-    this.player2 = player2;
+    this.player1 = new Player(map, keyHandler);
+    this.player2 = new Player(map, keyHandler);
     //enemy stuff, still jank
-    this.enemy1 = new Enemy(map, 1, 1);
-    enemy1.setTarget(5,5);
-    this.superMap = new SuperMap(map); // create a new super map object
+    //this.enemy1 = new Enemy(map, 1, 1);
+    //enemy1.setTarget(5,5);
+    //this.superMap = new SuperMap(map); // create a new super map object
   }
 
   public void startGameThread() {
@@ -62,33 +62,24 @@ public class GamePanel extends JPanel implements Runnable {
     long currentTime;
     long timer = 0;
     long drawCount = 0;
-    long gameTickTimer = 0;
 
     while (gameThread != null) {
       currentTime = System.nanoTime();
       delta += (currentTime - lastTime) / drawInterval;
       timer += (currentTime - lastTime);
-      gameTickTimer += (currentTime - lastTime); // for game tick timing
       lastTime = currentTime;
       if (delta >= 1) { // if enough time has passed
         // UPDATE: update information, ex. player position, map, etc.
         update();
+        map.gameTick();
         player1.updateSpriteVals();
-        //player2.update();
+        player2.updateSpriteVals();
 
         // DRAW: paint the new screen
         repaint();
         delta--;
         drawCount++;
         //System.out.println("test: upd + rep'd");
-      }
-
-      if (gameTickTimer >= 1000000000) { // 1 gameTick = 1 second
-        enemy1.takeAction(); // enemy random movement
-        map.gameTick(); // update the map
-        
-        
-        gameTickTimer = 0; // reset the game tick timer
       }
 
       if (timer >= 1000000000) { // if 1 second has passed
@@ -99,15 +90,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
   }
 
-                                                                                      // temp
-                                                                                    private int playerX = 100;
-                                                                                    private int playerY = 100;
-                                                                                    private int playerSpeed = 4;
-
   public void update() {
     player1.deathCheck(map); // check if player 1 is dead
     player2.deathCheck(map); // check if player 2 is dead
-    enemy1.deathCheck(map); // check if enemy 1 is dead
+    //enemy1.deathCheck(map); // check if enemy 1 is dead
     //keyHandler.setLeftPressed(true);
     
     if (keyHandler.getSpaceJustPressed()) {
@@ -136,14 +122,14 @@ public class GamePanel extends JPanel implements Runnable {
     if (keyHandler.getEJustPressed()) {
     if (player1.isAlive()) {
       map.addBomb(player1.getRow(), player1.getCol());
-      System.out.println("SpawnBomb");
+      System.out.println("SpawnBomb (if bomb aready there, not re-spawned)");
     } else {System.out.println("heh ded men no get bomb (p1)");}
       keyHandler.resetEJustPressed();
     }
     if (keyHandler.getEnterJustPressed()) {
       if (player2.isAlive()) {
       map.addBomb(player2.getRow(), player2.getCol());
-      System.out.println("SpawnBomb");
+      System.out.println("SpawnBomb (if bomb aready there, not re-spawned)");
     } else {System.out.println("heh ded men no get bomb (p2)");}
       keyHandler.resetEnterJustPressed();
     }
@@ -213,23 +199,24 @@ public class GamePanel extends JPanel implements Runnable {
       }
     }
     if (player1.isAlive()) { // if player 1 is alive
-    g2.setColor(Color.magenta);
-    g2.fillRect(player1.colToX(),player1.rowToY(), tileSize, tileSize);
-    g2.setColor(Color.pink);
-    g2.fillRect(player1.getX(), player1.getY(), tileSize, tileSize); // fill the square with white                              
+    // g2.setColor(Color.magenta);
+    // g2.fillRect(player1.colToX(),player1.rowToY(), tileSize, tileSize);
+    player1.draw(g2);
+    
+    // g2.setColor(Color.pink);
+    // g2.fillRect(player1.getX(), player1.getY(), tileSize, tileSize); // fill the square with white                              
   } 
   if (player2.isAlive()) { // if player 2 is alive
-    g2.setColor(Color.magenta);
-    g2.fillRect(player2.colToX(),player2.rowToY(), tileSize, tileSize);
-    g2.setColor(Color.darkGray);
-    g2.fillRect(player2.getX(), player2.getY(), tileSize, tileSize); // fill the square with white                              
+    // g2.setColor(Color.magenta);
+    // g2.fillRect(player2.colToX(),player2.rowToY(), tileSize, tileSize);
+    player2.draw(g2);                           
   } 
-  if (enemy1.isAlive()) {
-    g2.setColor(Color.magenta);
-    g2.fillRect(enemy1.colToX(),enemy1.rowToY(), tileSize, tileSize);
-    g2.setColor(Color.lightGray);
-    g2.fillRect(enemy1.getX(), enemy1.getY(), tileSize, tileSize); // fill the square with white          
-  }
+  //if (enemy1.isAlive()) {
+  //  g2.setColor(Color.magenta);
+  //  g2.fillRect(enemy1.colToX(),enemy1.rowToY(), tileSize, tileSize);
+  //  g2.setColor(Color.lightGray);
+  //  g2.fillRect(enemy1.getX(), enemy1.getY(), tileSize, tileSize); // fill the square with white          
+  //}
   g2.dispose(); 
 }
 }

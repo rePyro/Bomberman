@@ -10,8 +10,8 @@ public class Bomb extends Tile {
     super("Bomb", true, true);
     this.row = row;
     this.col = col;
-    fuse = 2; // TODO: set fuse to appropiate number
-    power = 2;
+    fuse = 180; 
+    power = 1;
   }
   //clone
   @Override

@@ -17,13 +17,13 @@ public int getFuse() {
   
   public BombFire(int row, int col) {
     super("BombFire", false, false);
-    fuse = 3; // TODO: set fuse to appropiate number
+    fuse = 60; 
     this.row = row;
     this.col = col;
   }
   public BombFire(BombFireGroup group, int row, int col) {
     super("BombFire", false, false);
-    fuse = 3; // TODO: set fuse to appropiate number
+    fuse = 60; 
     this.row = row;
     this.col = col;
     this.group = group;

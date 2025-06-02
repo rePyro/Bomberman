@@ -2,6 +2,8 @@
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.awt.Graphics2D;
+import java.io.File;
 
 public class Player 
 {
@@ -23,40 +25,38 @@ public class Player
   private BufferedImage ded1, ded2, ded3, ded4, ded5, ded6, ded7, ded8, ded9; // death sprites
 
   //constructor
-  public Player(Map map, int row, int col) {
+  public Player(Map map, int row, int col, KeyHandler keyHandler) {
     playerCount++;
     playerNumber = playerCount; // assign the current player count to this player
-    x = (int)((col+0.5)*48);
-    y = (int)((row+0.5)*48);
+    x = (int)(col*48);
+    y = (int)(row*48);
     this.row = row;
     this.col = col;
-    tileSize = 48; // size of the tile in pixels
-    speed = 4;
+    this.tileSize = 48; // size of the tile in pixels
+    speed = 1;
     rowCount = map.getField().length;
     field = map.getField(); // get the field from the map
-    //getPlayerImage();
+    getPlayerImage();
   }
-  public Player(Map map) {
+  public Player(Map map, KeyHandler keyHandler) {
+    this.keyHandler = keyHandler; // set the key handler for input
+    
     playerCount++;
     playerNumber = playerCount; // assign the current player count to this player
-    for (int i = 0; i < map.getField().length; i++) {
-      for (int j = 0; j < map.getField()[i].length; j++) {
-        if (map.getField()[i][j].getTileType().equals("SpawnTile") &&
-        ((SpawnTile)(map.getField()[i][j])).getSpawnNumber() == playerNumber) { // find the first empty tile
-          row = i;
-          col = j;
-          break;
-        }
-      }
+    if (playerNumber == 1) {
+      this.row = 1; // player 1 starts at row 1
+      this.col = 1; // player 1 starts at column 1
+    } else {
+      this.row = map.getField().length - 2; // player 2 starts at second to last row
+      this.col = map.getField()[0].length - 2; // player 2 starts at second to last column
     }
-    this.row = row;
-    this.col = col;
-    x = (int)((col+0.5)*48);
-    y = (int)((row+0.5)*48);
-    speed = 4;
+    this.tileSize = 48;
+    x = (int)(col*48);
+    y = (int)(row*48);
+    speed = 1;
     rowCount = map.getField().length;
     field = map.getField(); // get the field from the map
-    //getPlayerImage();
+    getPlayerImage();
   }
   public void killPlayer() {
     alive = false; // set player to dead
@@ -64,17 +64,17 @@ public class Player
   public void respawn(Map map) {
     alive = true; // set player to alive
     if (playerNumber == 1) {
-      map.setTile(1, 1, new SpawnTile()); // clear the tile
+      map.setTile(1, 1, new Tile()); // clear the tile
       this.row = 1;
       this.col = 1;
-      x = (int)((col+0.5)*48);
-      y = (int)((row+0.5)*48);
+      x = (int)((col)*48);
+      y = (int)((row)*48);
     } else {
-      map.setTile(field.length - 2, field[0].length - 2, new SpawnTile()); // clear the tile
+      map.setTile(field.length - 2, field[0].length - 2, new Tile()); // clear the tile
       this.row = field.length - 2;
       this.col = field[0].length - 2;
-      x = (int)((col+0.5)*48);
-      y = (int)((row+0.5)*48);
+      x = (int)((col)*48);
+      y = (int)((row)*48);
     }
   }
   
@@ -87,38 +87,38 @@ public class Player
       spriteName = "lad";
     }
     try {
-      idleU1 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-idleU1.png"));
-      idleU2 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-idleU2.png"));
-      idleD1 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-idleD1.png"));
-      idleD2 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-idleD2.png"));
-      idleL1 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-idleL1.png"));
-      idleL2 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-idleL2.png"));
-      idleR1 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-idleR1.png"));
-      idleR2 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-idleR2.png"));
-      up1 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-up1.png"));
-      up2 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-up2.png"));
-      down1 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-down1.png"));
-      down2 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-down2.png"));
-      left1 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-left1.png"));
-      left2 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-left2.png"));
-      right1 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-right1.png"));
-      right2 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-right2.png"));
-      ded1 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-ded1.png"));
-      ded2 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-ded2.png"));
-      ded3 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-ded3.png"));
-      ded4 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-ded4.png"));
-      ded5 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-ded5.png"));
-      ded6 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-ded6.png"));
-      ded7 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-ded7.png"));
-      ded8 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-ded8.png"));
-      ded9 = ImageIO.read(getClass().getResourceAsStream("/graphics/PlayerSprites/Bomber" + spriteName + "-ded9.png"));
+      idleU1 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-idleU1.png"));
+      idleU2 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-idleU2.png"));
+      idleD1 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-idleD1.png"));
+      idleD2 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-idleD2.png"));
+      idleL1 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-idleL1.png"));
+      idleL2 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-idleL2.png"));
+      idleR1 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-idleR1.png"));
+      idleR2 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-idleR2.png"));
+      up1 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-up1.png"));
+      up2 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-up2.png"));
+      down1 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-down1.png"));
+      down2 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-down2.png"));
+      left1 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-left1.png"));
+      left2 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-left2.png"));
+      right1 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-right1.png"));
+      right2 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-right2.png"));
+      ded1 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-ded1.png"));
+      ded2 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-ded2.png"));
+      ded3 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-ded3.png"));
+      ded4 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-ded4.png"));
+      ded5 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-ded5.png"));
+      ded6 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-ded6.png"));
+      ded7 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-ded7.png"));
+      ded8 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-ded8.png"));
+      ded9 = ImageIO.read(new File("graphics/PlayerSprites/Bomber" + spriteName + "-ded9.png"));
     } catch (IOException e) {
       e.printStackTrace(); // print the stack trace if there is an error loading the images
       System.out.println("Error loading player images!"); // print an error message
     }
   }
 
-  private KeyHandler keyHandler = new KeyHandler();
+  private KeyHandler keyHandler;
   private int spriteNumber = 0; // variable to help cycle animations, range 0-3
   private int spriteCounter = 0; // variable incrementing every frame
   public int getSpriteNumber() { return spriteNumber; }
@@ -127,8 +127,8 @@ public class Player
   public void setSpriteCounter(int input) { spriteCounter = input; }
 
   public void draw(Graphics2D g2) {
-    Buffered Image image = null; // variable to hold the image to be drawn
-    if (alive) {
+    BufferedImage image = null; // variable to hold the image to be drawn
+    if (alive && playerNumber == 1) {
       if (keyHandler.getDownPressed()) {
         direction = "down";
         if (spriteNumber == 0) { image = down1; } 
@@ -151,20 +151,57 @@ public class Player
         else { image = idleR1; }
       } else {
         switch (direction) {
-          case "up": if (spriteNumber % 2 == 0) { image = idleU1; } else { image = idleU2; } break;
-          case "down": if (spriteNumber % 2 == 0) { image = idleD1; } else { image = idleD2; } break;
-          case "left": if (spriteNumber % 2 == 0) { image = idleL1; } else { image = idleL2; } break;
-          case "right": if (spriteNumber % 2 == 0) { image = idleR1; } else { image = idleR2; } break;
+          case "up": if (spriteNumber / 2 == 0) { image = idleU1; } else { image = idleU2; } break;
+          case "down": if (spriteNumber / 2 == 0) { image = idleD1; } else { image = idleD2; } break;
+          case "left": if (spriteNumber / 2 == 0) { image = idleL1; } else { image = idleL2; } break;
+          case "right": if (spriteNumber / 2 == 0) { image = idleR1; } else { image = idleR2; } break;
         }
       }
+    }
+    else if (alive && playerNumber == 2) {
+      if (keyHandler.getDownPressed2()) {
+        direction = "down";
+        if (spriteNumber == 0) { image = down1; } 
+        else if (spriteNumber == 2) { image = down2; }
+        else { image = idleD1; }
+      } else if (keyHandler.getUpPressed2()) {
+        direction = "up";
+        if (spriteNumber == 0) { image = up1; } 
+        else if (spriteNumber == 2) { image = up2; }
+        else { image = idleU1; }
+      } else if (keyHandler.getLeftPressed2()) {
+        direction = "left";
+        if (spriteNumber == 0) { image = left1; } 
+        else if (spriteNumber == 2) { image = left2; }
+        else { image = idleL1; }
+      } else if (keyHandler.getRightPressed2()) {
+        direction = "right";
+        if (spriteNumber == 0) { image = right1; } 
+        else if (spriteNumber == 2) { image = right2; }
+        else { image = idleR1; }
+      } else {
+        switch (direction) {
+          case "up": if (spriteNumber / 2 == 0) { image = idleU1; } else { image = idleU2; } break;
+          case "down": if (spriteNumber / 2 == 0) { image = idleD1; } else { image = idleD2; } break;
+          case "left": if (spriteNumber / 2 == 0) { image = idleL1; } else { image = idleL2; } break;
+          case "right": if (spriteNumber / 2 == 0) { image = idleR1; } else { image = idleR2; } break;
+        }
+      }
+    }
+    // Draw the image if it's loaded
+    //System.out.println("nothing detected");
+    if (image != null) {
+      g2.drawImage(image, x, y, tileSize, tileSize, null);
+      //System.out.println("Drawing player" + playerNumber + " (" + x + ", " + y + "), sN " + spriteNumber + ", d: " + direction + ", dP: " + keyHandler.getDownPressed() + ", tS: " + tileSize);
     }
   }
   
   public void updateSpriteVals() {
-    spriteNumber++;
-    if (spriteNumber == 10) { // if 10 frames passed, flip sprite counter
-      spriteCounter++;
-      if (spriteCounter == 4) { spriteCounter = 0; } // cycle back
+    spriteCounter++;
+    if (spriteCounter == 10) { // if 10 frames passed, flip sprite counter
+      spriteNumber++;
+      spriteCounter = 0;
+      if (spriteNumber == 4) { spriteNumber = 0; } // cycle back
     }
   }
 
@@ -215,14 +252,14 @@ public class Player
   }
   //Grid conversion
   public void indexPos() {
-    row = (int)(y/48+0.5);
-    col = (int)(x/48+0.5);
+    row = (int)((y+24)/48); // set hitbox/magenta square to center of tile
+    col = (int)((x+24)/48); // ditto
   }
   public int rowToY() {
-    return (int)((row+0.5)*48);
+    return (int)((row)*48);
   }
   public int colToX() {
-    return (int)((col+0.5)*48);
+    return (int)((col)*48);
   }
   //Lazy
   public boolean withinR(int r) {
@@ -316,7 +353,7 @@ public class Player
     }
   }
   //Movement
-  private int tileLeniency = 20;//margin of error for tile movement, so that the player can move even if they are not exactly on the tile
+  private int tileLeniency = 10;//margin of error for tile movement, so that the player can move even if they are not exactly on the tile
   public boolean canMoveUp(Map map) {
     if (withinR(row)) {
     if (rowToY() < y) {

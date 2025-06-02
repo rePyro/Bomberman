@@ -21,6 +21,8 @@ public class GameWindow
   // methods
   public void addPanel(GamePanel gamePanel) {
     window.add(gamePanel);
+    //window.setSize(gamePanel.getPreferredSize());
+    //window.setSize(768, 480);
     window.pack(); // pack the window to fit the panel
   }
 }

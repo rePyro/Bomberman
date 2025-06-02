@@ -1,6 +1,6 @@
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-//TODO: fix this. Issue occurs because key presses aren't being registered, but everything else, like booleans and rendering, works. debug!!
+
 public class KeyHandler implements KeyListener {
     // variables
     private boolean upPressed, downPressed, leftPressed, rightPressed; // movement keys

@@ -11,14 +11,9 @@ public class Main
     Map map = new Map();
     map.printMap();
 
-
-    // create two players
-    Player player1 = new Player(map); // player 1 at top left corner
-    Player player2 = new Player(map); // player 2 at bottom right corner
-
-    // create a new game window
+    // create a new game window w/ map and players
     GameWindow window = new GameWindow();
-    GamePanel gamePanel = new GamePanel(map, player1, player2);
+    GamePanel gamePanel = new GamePanel(map);
     window.addPanel(gamePanel); // add the game panel to the window
 
     gamePanel.requestFocusInWindow();

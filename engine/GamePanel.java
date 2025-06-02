@@ -188,6 +188,12 @@ public class GamePanel extends JPanel implements Runnable {
           tileImageStorage.draw(g2, "Bomb", map.colToX(col), map.rowToY(row), tileSize);
         } else if (map.getField()[row][col] instanceof BombFire) {
           tileImageStorage.draw(g2, "Explosion", map.colToX(col), map.rowToY(row), tileSize);
+        } else if (map.getField()[row][col] instanceof CountUpgrade) {
+          tileImageStorage.draw(g2, "CountUpgrade", map.colToX(col), map.rowToY(row), tileSize);
+        } else if (map.getField()[row][col] instanceof PowerUpgrade) {
+          tileImageStorage.draw(g2, "PowerUpgrade", map.colToX(col), map.rowToY(row), tileSize);
+        } else if (map.getField()[row][col] instanceof SpeedUpgrade) {
+          tileImageStorage.draw(g2, "SpeedUpgrade", map.colToX(col), map.rowToY(row), tileSize);    
         } else {
           tileImageStorage.draw(g2, "Tile", map.colToX(col), map.rowToY(row), tileSize);
         }
@@ -200,18 +206,18 @@ public class GamePanel extends JPanel implements Runnable {
     
     // g2.setColor(Color.pink);
     // g2.fillRect(player1.getX(), player1.getY(), tileSize, tileSize); // fill the square with white                              
-  } 
-  if (player2.isAlive()) { // if player 2 is alive
-    // g2.setColor(Color.magenta);
-    // g2.fillRect(player2.colToX(),player2.rowToY(), tileSize, tileSize);
-    player2.draw(g2);                           
-  } 
-  //if (enemy1.isAlive()) {
-  //  g2.setColor(Color.magenta);
-  //  g2.fillRect(enemy1.colToX(),enemy1.rowToY(), tileSize, tileSize);
-  //  g2.setColor(Color.lightGray);
-  //  g2.fillRect(enemy1.getX(), enemy1.getY(), tileSize, tileSize); // fill the square with white          
-  //}
-  g2.dispose(); 
-}
+    } 
+    if (player2.isAlive()) { // if player 2 is alive
+      // g2.setColor(Color.magenta);
+      // g2.fillRect(player2.colToX(),player2.rowToY(), tileSize, tileSize);
+      player2.draw(g2);                           
+    } 
+    //if (enemy1.isAlive()) {
+    //  g2.setColor(Color.magenta);
+    //  g2.fillRect(enemy1.colToX(),enemy1.rowToY(), tileSize, tileSize);
+    //  g2.setColor(Color.lightGray);
+    //  g2.fillRect(enemy1.getX(), enemy1.getY(), tileSize, tileSize); // fill the square with white          
+    //}
+    g2.dispose(); 
+  }
 }

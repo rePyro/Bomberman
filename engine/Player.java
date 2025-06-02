@@ -12,11 +12,12 @@ public class Player
   private int x;
   private int y;
   private int speed;
+  private int bombCount;
   private int row;
   private int col;
   private int rowCount;
   private int tileSize;
-  private boolean alive = true; // player is alive by default
+  private boolean alive;
   private Tile[][] field; // the field of the map, used for collision detection
   // for sprite rendering
   private String direction = "down";
@@ -24,40 +25,35 @@ public class Player
   private BufferedImage up1, up2, down1, down2, left1, left2, right1, right2; // movement sprites
   private BufferedImage ded1, ded2, ded3, ded4, ded5, ded6, ded7, ded8, ded9; // death sprites
 
-  //constructor
+  //constructors
   public Player(Map map, int row, int col, KeyHandler keyHandler) {
-    playerCount++;
-    playerNumber = playerCount; // assign the current player count to this player
-    x = (int)(col*48);
-    y = (int)(row*48);
-    this.row = row;
-    this.col = col;
-    this.tileSize = 48; // size of the tile in pixels
-    speed = 1;
-    rowCount = map.getField().length;
-    field = map.getField(); // get the field from the map
-    getPlayerImage();
+    this(map, keyHandler);
+    this.row = row; // overwrite the row to the given row
+    this.col = col; // overwrite the column to the given column
   }
   public Player(Map map, KeyHandler keyHandler) {
-    this.keyHandler = keyHandler; // set the key handler for input
-    
     playerCount++;
-    playerNumber = playerCount; // assign the current player count to this player
-    if (playerNumber == 1) {
-      this.row = 1; // player 1 starts at row 1
-      this.col = 1; // player 1 starts at column 1
+    this.playerNumber = playerCount; // assign the current player count to this player
+    if (playerCount == 1) {
+      this.row = 1; // player 1 starts at (1, 1)
+      this.col = 1;
     } else {
-      this.row = map.getField().length - 2; // player 2 starts at second to last row
-      this.col = map.getField()[0].length - 2; // player 2 starts at second to last column
+      this.row = map.getField().length - 2; // player 2 starts at the bottom right corner
+      this.col = map.getField()[0].length - 2;
     }
+    this.x = (int)(col*48);
+    this.y = (int)(row*48);
+    this.speed = 1;
+    this.bombCount = 1;
+    this.rowCount = map.getField().length;
     this.tileSize = 48;
-    x = (int)(col*48);
-    y = (int)(row*48);
-    speed = 1;
-    rowCount = map.getField().length;
-    field = map.getField(); // get the field from the map
+    this.alive = true;
+    this.field = map.getField(); 
+    this.keyHandler = keyHandler;
     getPlayerImage();
   }
+
+
   public void killPlayer() {
     alive = false; // set player to dead
   }

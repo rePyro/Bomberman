@@ -10,7 +10,7 @@ public class GamePanel extends JPanel implements Runnable {
   private final int originalTileSize = 16; // original tile size
   private final int scale = 3; // scale factor, 48 pixels
 
-  private final int tileSize = originalTileSize * scale; // scaled tile size
+  public final int tileSize = originalTileSize * scale; // scaled tile size
   private final int maxScreenCol = 15; 
   private final int maxScreenRow = 9; 
   private final int screenWidth = tileSize * maxScreenCol; // 720 pixels
@@ -39,9 +39,11 @@ public class GamePanel extends JPanel implements Runnable {
     this.map = map;
     this.player1 = player1;
     this.player2 = player2;
+    player1.setKeyHandler(keyHandler);
+    player2.setKeyHandler(keyHandler);
+
     //enemy stuff, still jank
     this.enemy1 = new Enemy(map, 1, 1);
-    enemy1.setTarget(5,5);
     this.superMap = new SuperMap(map); // create a new super map object
   }
 
@@ -73,6 +75,9 @@ public class GamePanel extends JPanel implements Runnable {
       if (delta >= 1) { // if enough time has passed
         // UPDATE: update information, ex. player position, map, etc.
         update();
+        enemy1.enemyTick(); // update enemy position (Needs to be done before map updates)
+        map.gameTick();
+ 
         player1.updateSpriteVals();
         //player2.update();
 
@@ -84,8 +89,8 @@ public class GamePanel extends JPanel implements Runnable {
       }
 
       if (gameTickTimer >= 1000000000) { // 1 gameTick = 1 second
-        enemy1.takeAction(); // enemy random movement
-        map.gameTick(); // update the map
+        
+         // update the map
         
         
         gameTickTimer = 0; // reset the game tick timer
@@ -98,11 +103,6 @@ public class GamePanel extends JPanel implements Runnable {
       }
     }
   }
-
-                                                                                      // temp
-                                                                                    private int playerX = 100;
-                                                                                    private int playerY = 100;
-                                                                                    private int playerSpeed = 4;
 
   public void update() {
     player1.deathCheck(map); // check if player 1 is dead
@@ -215,14 +215,12 @@ public class GamePanel extends JPanel implements Runnable {
     if (player1.isAlive()) { // if player 1 is alive
     g2.setColor(Color.magenta);
     g2.fillRect(player1.colToX(),player1.rowToY(), tileSize, tileSize);
-    g2.setColor(Color.pink);
-    g2.fillRect(player1.getX(), player1.getY(), tileSize, tileSize); // fill the square with white                              
+    player1.draw(g2);   
   } 
   if (player2.isAlive()) { // if player 2 is alive
     g2.setColor(Color.magenta);
     g2.fillRect(player2.colToX(),player2.rowToY(), tileSize, tileSize);
-    g2.setColor(Color.darkGray);
-    g2.fillRect(player2.getX(), player2.getY(), tileSize, tileSize); // fill the square with white                              
+    player2.draw(g2);   
   } 
   if (enemy1.isAlive()) {
     g2.setColor(Color.magenta);

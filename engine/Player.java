@@ -2,6 +2,7 @@
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.awt.Graphics2D;
 
 public class Player 
 {
@@ -26,8 +27,8 @@ public class Player
   public Player(Map map, int row, int col) {
     playerCount++;
     playerNumber = playerCount; // assign the current player count to this player
-    x = (int)((col+0.5)*48);
-    y = (int)((row+0.5)*48);
+    x = (int)((col)*48);
+    y = (int)((row)*48);
     this.row = row;
     this.col = col;
     tileSize = 48; // size of the tile in pixels
@@ -51,8 +52,8 @@ public class Player
     }
     this.row = row;
     this.col = col;
-    x = (int)((col+0.5)*48);
-    y = (int)((row+0.5)*48);
+    x = (int)((col)*48);
+    y = (int)((row)*48);
     speed = 4;
     rowCount = map.getField().length;
     field = map.getField(); // get the field from the map
@@ -118,16 +119,17 @@ public class Player
     }
   }
 
-  private KeyHandler keyHandler = new KeyHandler();
+  private KeyHandler keyHandler;
   private int spriteNumber = 0; // variable to help cycle animations, range 0-3
   private int spriteCounter = 0; // variable incrementing every frame
   public int getSpriteNumber() { return spriteNumber; }
   public int getSpriteCounter() { return spriteCounter; }
   public void setSpriteNumber(int input) { spriteNumber = input; }
   public void setSpriteCounter(int input) { spriteCounter = input; }
-
+  public KeyHandler getKeyHandler() { return keyHandler; }
+  public void setKeyHandler(KeyHandler keyHandler) { this.keyHandler = keyHandler; }
   public void draw(Graphics2D g2) {
-    Buffered Image image = null; // variable to hold the image to be drawn
+    BufferedImage image = null; // variable to hold the image to be drawn
     if (alive) {
       if (keyHandler.getDownPressed()) {
         direction = "down";
@@ -158,6 +160,7 @@ public class Player
         }
       }
     }
+    g2.drawImage(image, x, y, tileSize, tileSize, null);
   }
   
   public void updateSpriteVals() {
@@ -183,6 +186,9 @@ public class Player
   }
   public int getSpeed() {
     return speed;
+  }
+  public void setSpeed(int speed) {
+    this.speed = speed;
   }
   public int getRow() {
     return row;
@@ -215,14 +221,14 @@ public class Player
   }
   //Grid conversion
   public void indexPos() {
-    row = (int)(y/48+0.5);
-    col = (int)(x/48+0.5);
+    row = (int)(y/48);
+    col = (int)(x/48);
   }
   public int rowToY() {
-    return (int)((row+0.5)*48);
+    return (int)((row)*48);
   }
   public int colToX() {
-    return (int)((col+0.5)*48);
+    return (int)((col)*48);
   }
   //Lazy
   public boolean withinR(int r) {

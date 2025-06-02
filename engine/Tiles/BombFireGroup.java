@@ -42,4 +42,7 @@ public BombFireGroup clone() {
     public ArrayList<BombFire> getFires() {
         return fires;
     }
+    public void setFuse(int fuse) {
+        this.fuse = fuse;
+    }
 }

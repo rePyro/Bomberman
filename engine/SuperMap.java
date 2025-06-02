@@ -8,6 +8,7 @@ public class SuperMap {
         this.mainMap = mainMap;
         this.prediction = new ArrayList<>();
         vision = mainMap.getBombFuse() + mainMap.getFireFuse()+1;
+        this.makePrediction(); // Initialize predictions based on the main map
     }
     public Map getMainMap() {
         return mainMap;
@@ -25,7 +26,7 @@ public class SuperMap {
     public Map predict(Map map) {
         if (map != null) {
             Map predictedMap = new Map(map);
-            predictedMap.gameTick(); // Assuming Map has a copy constructor or clone method
+            predictedMap.mapUpdate(); // Assuming Map has a copy constructor or clone method
             return predictedMap;
         } else {
             throw new IllegalArgumentException("Map cannot be null");

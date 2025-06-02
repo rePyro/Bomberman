@@ -29,7 +29,7 @@ public class Player
     this(map, keyHandler);
     this.row = row; // overwrite the row to the given row
     this.col = col; // overwrite the column to the given column
-=======
+  }
   //constructor
   public Player(Map map, int row, int col) {
     playerCount++;
@@ -43,6 +43,7 @@ public class Player
     rowCount = map.getField().length;
     field = map.getField(); // get the field from the map
     //getPlayerImage();
+   // this.alive = true; // set player to alive
   }
   public Player(Map map, KeyHandler keyHandler) {
     playerCount++;
@@ -385,39 +386,39 @@ public class Player
     }
   }
   //Movement
-  private int tileLeniency = 10;//margin of error for tile movement, so that the player can move even if they are not exactly on the tile
+  private int tileLeniency = 15;//margin of error for tile movement, so that the player can move even if they are not exactly on the tile
   public boolean canMoveUp(Map map) {
     if (withinR(row)) {
-    if (rowToY() < y) {
-      return true;
-    }
-    else if (checkUp(map) == true && Math.abs(colToX() - x) < tileLeniency) {
-      x = colToX();
-      return true;
+        if (y > rowToY()) { // FIXED: was rowToY() < y
+            return true;
+        }
+        else if (checkUp(map) == true && Math.abs(colToX() - x) < tileLeniency) {
+            x = colToX();
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     else {
-      return false;
-    }
-    }
-    else {
-      return false; // if the row is out of bounds, return false
+        return false; // if the row is out of bounds, return false
     }
   }
   public boolean canMoveDown(Map map) {
     if (withinR(row)) {
-    if (rowToY() > y) {
-      return true;
-    }
-    else if (checkDown(map) == true && Math.abs(colToX() - x) < tileLeniency) {
-      x = colToX();
-      return true;
+        if (y < rowToY()) { // FIXED: was rowToY() > y
+            return true;
+        }
+        else if (checkDown(map) == true && Math.abs(colToX() - x) < tileLeniency) {
+            x = colToX();
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     else {
-      return false;
-    }
-    }
-    else {
-      return false; // if the row is out of bounds, return false
+        return false; // if the row is out of bounds, return false
     }
   }
   public boolean canMoveLeft(Map map) {

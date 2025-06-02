@@ -72,8 +72,10 @@ public class GamePanel extends JPanel implements Runnable {
         // UPDATE: update information, ex. player position, map, etc.
         update();
         map.gameTick();
+        if (enemy1.isAlive()) { // if enemy is alive
+          enemy1.updateSpriteVals(); // update enemy sprite values
         enemy1.enemyTick(); // update enemy position (Needs to be done before map updates)
-        map.gameTick();
+        }
  
         player1.updateSpriteVals();
         player2.updateSpriteVals();
@@ -214,12 +216,16 @@ public class GamePanel extends JPanel implements Runnable {
       // g2.fillRect(player2.colToX(),player2.rowToY(), tileSize, tileSize);
       player2.draw(g2);                           
     } 
-    //if (enemy1.isAlive()) {
-    //  g2.setColor(Color.magenta);
-    //  g2.fillRect(enemy1.colToX(),enemy1.rowToY(), tileSize, tileSize);
-    //  g2.setColor(Color.lightGray);
-    //  g2.fillRect(enemy1.getX(), enemy1.getY(), tileSize, tileSize); // fill the square with white          
-    //}
-    g2.dispose(); 
+    if (enemy1.isAlive()) {
+      //System.out.println("Drew Enemy");
+      enemy1.draw(g2);
+      g2.setColor(Color.magenta);
+     g2.fillRect(enemy1.colToX(),enemy1.rowToY(), tileSize, tileSize);
+     g2.setColor(Color.lightGray);
+     g2.fillRect(enemy1.getX(), enemy1.getY(), tileSize, tileSize); // fill the square with white          
+    //System.out.println("Drew Goku");
+     
   }
+  g2.dispose();
+}
 }

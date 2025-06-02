@@ -6,23 +6,6 @@ public class Enemy extends Player {
     Map map;
     SuperMap superMap;
     KeyHandler keyHandler;
-
-    public Enemy(Map map, int row, int col, KeyHandler keyHandler) {
-        super(map, row, col, keyHandler);
-        this.desire = 0; // Initialize desire to 0
-        this.targetRow = row; // Set targetRow to current row
-        this.targetCol = col; // Set targetCol to current column
-        this.map = map; // Store the map reference
-        this.superMap = new SuperMap(map); // Initialize SuperMap with the current map
-        this.keyHandler = keyHandler; // Initialize keyHandler
-    }
-    // Weighting methods for actions
-    public void setDesire(int desire) {
-        this.desire = desire; // Set the desire value
-    }
-    public void setTarget(int row, int col) {
-        this.targetRow = row; // Set the target row
-        this.targetCol = col; // Set the target column
     private int currentTick = 0;
     private int ticksPerSecond = 60;
     private List<Coordinate> currentPath = new ArrayList<>();
@@ -46,6 +29,7 @@ public class Enemy extends Player {
 
     private int failedEscapeAttempts = 0;
     private static final int MAX_FAILED_ESCAPE_ATTEMPTS = 20;
+    private int maxTicks = 7; // Maximum ticks to check for danger
 
     private Coordinate lastRandomMove = null; // Add this to your Enemy class fields
 
@@ -67,7 +51,17 @@ public class Enemy extends Player {
         this.currentPath = weightedSafePathFindTo(cautiousSuperMap, getRow(), getCol(), overallTargetRow, overallTargetCol, 0);
         System.out.println(this.currentPath);
     }
-
+    public Enemy(Map map, int row, int col, KeyHandler keyHandler) {
+        super(map, row, col, keyHandler);
+        this.targetRow = row; // Set targetRow to current row
+        this.targetCol = col; // Set targetCol to current column
+        this.map = map; // Store the map reference
+        this.superMap = new SuperMap(map); // Initialize SuperMap with the current map
+        this.keyHandler = keyHandler; // Initialize keyHandler
+    }
+    // Weighting methods for actions
+    public void setDesire(int desire) {
+    }
     public void setTarget(int row, int col) { this.targetRow = row; this.targetCol = col; }
     public void setTarget(Coordinate target) { this.targetRow = target.getRow(); this.targetCol = target.getCol(); }
     public void setOverallTarget(int row, int col) { this.overallTargetRow = row; this.overallTargetCol = col; }
@@ -191,11 +185,10 @@ public class Enemy extends Player {
             int r = getRow() + dir[0];
             int c = getCol() + dir[1];
             if (!canMoveTo(map, r, c)) continue;
-            // Prevent stepping into BombFire right now
             if (map.getTile(r, c) instanceof BombFire) continue;
             boolean safe = true;
-            for (int t = 0; t < predictions.size(); t++) {
-                Map futureMap = predictions.get(t);
+            for (int t = 0; t < maxTicks; t++) {
+                Map futureMap = map.mapUpdatedByTicks(t * 60);
                 if (futureMap == null || danger(futureMap, r, c)) {
                     safe = false;
                     break;
@@ -391,8 +384,8 @@ public class Enemy extends Player {
                 // Prevent stepping into BombFire right now
                 if (map.getTile(r, c) instanceof BombFire) continue;
                 boolean safe = true;
-                for (int t = 0; t < predictions.size(); t++) {
-                    Map futureMap = predictions.get(t);
+                for (int t = 0; t < maxTicks; t++) {
+                    Map futureMap = map.mapUpdatedByTicks(t * 60);
                     if (futureMap == null || danger(futureMap, r, c)) {
                         safe = false;
                         break;

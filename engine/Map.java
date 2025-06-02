@@ -247,7 +247,8 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     Bomb targetBomb = (Bomb)field[r-num][c];
     targetBomb.detonate();
 } else if (field[r-num][c].getBreakable() == true) {
-   setTile(r-num, c, new Tile()); //This "explodes" walls
+    setTile(r-num, c, new Tile()); //This "explodes" walls
+    //field[r-num][c].breakTile();
 }
           }
         }
@@ -266,6 +267,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     targetBomb.detonate();
 } else if (field[r+num][c].getBreakable() == true) {
     setTile(r+num, c, new Tile());
+    //field[r+num][c].breakTile();
 }
           }
         }
@@ -284,6 +286,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     targetBomb.detonate();
 } else if (field[r][c-num].getBreakable() == true) {
   setTile(r, c-num, new Tile());
+  //field[r][c-num].breakTile();
 }
           }
         }
@@ -302,6 +305,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     targetBomb.detonate();
 } else if (field[r][c+num].getBreakable() == true) {
     setTile(r, c+num, new Tile());
+    //field[r][c+num].breakTile();
 }
           }
         }

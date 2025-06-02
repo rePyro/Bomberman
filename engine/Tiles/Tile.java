@@ -2,7 +2,6 @@
 
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 
 public class Tile implements Cloneable {
@@ -11,6 +10,8 @@ public class Tile implements Cloneable {
     private boolean isSolid;
     private boolean isBreakable;
     private int dangerLevel; // 0 = no danger, 1 = low danger, 2 = medium danger, 3 = high danger
+    private int rowIndex;
+    private int colIndex;
 
     // constructors
     public Tile() { // basic tile, aka air
@@ -19,6 +20,15 @@ public class Tile implements Cloneable {
         isBreakable = false;
         dangerLevel = 0; // default danger level
     }
+    public Tile(int row, int col) { // basic tile, aka air
+        tileType = "Tile";
+        isSolid = false;
+        isBreakable = false;
+        dangerLevel = 0; // default danger level
+        this.rowIndex = row;
+        this.colIndex = col;
+    }
+    
     public Tile(String tileType, boolean isSolid, boolean isBreakable) { // any other tile
         this.tileType = tileType;
         this.isSolid = isSolid;
@@ -47,7 +57,19 @@ public class Tile implements Cloneable {
     public String getTileType() {
         return tileType;
     }
+    public int getRowIndex() {
+    return rowIndex;
+    }
+    public int getColIndex() {
+        return colIndex;
+    }
+    public void setRowIndex(int rowIndex) {
+        this.rowIndex = rowIndex;
+    }
+    public void setColIndex(int colIndex) {
+        this.colIndex = colIndex;
+    }
 
     // methods
-    public void breakTile() {} // to be overridden by subclasses if needed
+    public void update() {} // to be overridden by subclasses if needed
 }

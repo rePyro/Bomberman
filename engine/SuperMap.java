@@ -26,7 +26,7 @@ public class SuperMap {
     public Map predict(Map map) {
         if (map != null) {
             Map predictedMap = new Map(map);
-            predictedMap.mapUpdate(); // Assuming Map has a copy constructor or clone method
+            predictedMap.fireTick(); predictedMap.explodeCheck(); // Assuming Map has a copy constructor or clone method
             return predictedMap;
         } else {
             throw new IllegalArgumentException("Map cannot be null");

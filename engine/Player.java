@@ -43,7 +43,7 @@ public class Player
     rowCount = map.getField().length;
     field = map.getField(); // get the field from the map
     //getPlayerImage();
-   // this.alive = true; // set player to alive
+    //this.alive = true; // set player to alive
   }
   public Player(Map map, KeyHandler keyHandler) {
     playerCount++;
@@ -156,6 +156,7 @@ public class Player
   public void setSpriteCounter(int input) { spriteCounter = input; }
   public KeyHandler getKeyHandler() { return keyHandler; }
   public void setKeyHandler(KeyHandler keyHandler) { this.keyHandler = keyHandler; }
+ 
   public void draw(Graphics2D g2) {
     BufferedImage image = null; // variable to hold the image to be drawn
     if (alive && playerNumber == 1) {

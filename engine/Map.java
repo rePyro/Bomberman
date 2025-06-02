@@ -8,6 +8,7 @@ public class Map
   private int tileSize;
   private ArrayList<Bomb> bombList;
   private ArrayList<BombFireGroup> bombFireList;
+  private ArrayList<SoftWall> softWallUpdates;
   private int fireFuse = 60; // default fuse for fire, can be changed later
   private int bombFuse = 180; // default fuse for bomb, can be changed later
   private int bombPower = 2; // default power for bomb, can be changed later
@@ -19,14 +20,15 @@ public class Map
     tileSize = 48;
     bombList = new ArrayList<Bomb>();
     bombFireList = new ArrayList<BombFireGroup>();
+    softWallUpdates = new ArrayList<SoftWall>();
 
     // set Tiles for each position
     for (int row = 0; row < field.length; row++) {
       for (int col = 0; col < field[0].length; col++) {
         if (row == 0 || row == field.length - 1 || col == 0 || col == field[0].length - 1) {
-          field[row][col] = new HardWall(); // HardWall the border (haha, trump)
+          field[row][col] = new HardWall(row, col); // HardWall the border (haha, trump)
         } else if (row % 2 == 0 && col % 2 == 0) {
-          field[row][col] = new HardWall(); // HardWall the inside
+          field[row][col] = new HardWall(row, col); // HardWall the inside
         } else if 
                   ((row != 1 || col != 1) &&
                   (row != 1 || col != 2) &&
@@ -36,9 +38,9 @@ public class Map
                   (row != field.length - 2 || col != field[0].length - 3)) // skip spawn spaces
         {
           if ((int) (Math.random() * 10) < 7) { // 70% chance to...
-            field[row][col] = new SoftWall(); // SoftWall the grid
+            field[row][col] = new SoftWall(row, col); // SoftWall the grid
           } else {
-            field[row][col] = new Tile(); // Tile the empty spaces
+            field[row][col] = new Tile(row, col); // Tile the empty spaces
           }
         } else if ((row == 1 && col == 1) || (row == field.length - 2 && col == field[0].length - 2)) {
           field[row][col] = new Tile(); // Tile the spawns (removed for now)
@@ -98,7 +100,25 @@ public class Map
     explodeCheck();
     // 2. Tick all fires
     fireTick();
+
+    tileUpdate();
   }
+  public void tileUpdate() {
+    // Update all tiles in the field
+    if (softWallUpdates == null) {
+      System.out.print("L");
+      return; // No soft walls to update
+    }
+    for (int i = softWallUpdates.size() - 1; i >= 0; i--) {
+      System.out.print("W");
+      SoftWall tile = softWallUpdates.get(i);
+      if (tile.getCurrentFrame() == 0) {
+      setTile(tile.getRowIndex(), tile.getColIndex(), new Tile(tile.getRowIndex(), tile.getColIndex()));
+      softWallUpdates.remove(i);
+      }
+      else tile.update();
+      }
+    }
   public void mapUpdate(int ticks) {
     int i = 0;
     while (i < ticks) {
@@ -269,8 +289,9 @@ public void blowInDirection(Bomb bomb, int num, BombFireGroup group, int dr, int
                 Bomb targetBomb = (Bomb) field[r][c];
                 targetBomb.detonate();
             } else if (field[r][c].getBreakable() == true) {
-                addBombFire(group, r, c);
+                softWallUpdates.add((SoftWall)getTile(r, c)); // add to soft wall updates
                 System.out.println("Blowing up breakable tile at (" + r + ", " + c + ")");
+                System.out.println(softWallUpdates);
             }
         }
     }

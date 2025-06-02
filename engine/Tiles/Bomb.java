@@ -5,6 +5,7 @@ public class Bomb extends Tile {
   private int row;
   private int col;
   private int power;
+  private int tileSize = 48; // Assuming tileSize is 32 pixels, adjust as needed
   
   public Bomb(int row, int col) {
     super("Bomb", true, true);
@@ -45,6 +46,13 @@ public Bomb clone() {
   public int getCol() {
     return col;
   }
+  public int getY() {
+    return row * tileSize;
+  }
+  public int getX() {
+    return col * tileSize;
+  }
+  //Lazy
   // TODO: make Bomb functions with gameticks
   public boolean tryBreak(Tile[][] field, int row, int col) {
     try {

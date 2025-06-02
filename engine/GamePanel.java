@@ -185,13 +185,13 @@ public class GamePanel extends JPanel implements Runnable {
         if (map.getField()[row][col].getTileType().equals("HardWall")) {
           tileImageStorage.draw(g2, "HardWall", map.colToX(col), map.rowToY(row), tileSize);
         } else if (map.getField()[row][col] instanceof SoftWall) {
-          tileImageStorage.draw(g2, "SoftWall", map.colToX(col), map.rowToY(row), tileSize);
+          ((SoftWall)map.getField()[row][col]).draw(g2);
         } else if (map.getField()[row][col] instanceof SpawnTile) {
           //tileImageStorage.draw(g2, "SpawnTile", map.colToX(col), map.rowToY(row), tileSize);
         } else if (map.getField()[row][col] instanceof Bomb) {
           tileImageStorage.draw(g2, "Bomb", map.colToX(col), map.rowToY(row), tileSize);
         } else if (map.getField()[row][col] instanceof BombFire) {
-          tileImageStorage.draw(g2, "Explosion", map.colToX(col), map.rowToY(row), tileSize);
+          ((BombFire)map.getField()[row][col]).draw(g2);
         } else if (map.getField()[row][col] instanceof CountUpgrade) {
           tileImageStorage.draw(g2, "CountUpgrade", map.colToX(col), map.rowToY(row), tileSize);
         } else if (map.getField()[row][col] instanceof PowerUpgrade) {
@@ -201,6 +201,7 @@ public class GamePanel extends JPanel implements Runnable {
         } else {
           tileImageStorage.draw(g2, "Tile", map.colToX(col), map.rowToY(row), tileSize);
         }
+        
       }
     }
     if (player1.isAlive()) { // if player 1 is alive

@@ -43,7 +43,7 @@ public class SoftWall extends Tile
   
   public void draw(Graphics2D g2) {
     if (currentFrame < 60) {
-      System.out.println("Drawing SoftWall at (" + this.getRowIndex() + ", " + this.getColIndex() + ") with state: " + currentFrame);
+      //System.out.println("Drawing SoftWall at (" + this.getRowIndex() + ", " + this.getColIndex() + ") with state: " + currentFrame);
        // Do not draw if the wall is destroyed
     }
     
@@ -55,7 +55,7 @@ public class SoftWall extends Tile
     else if (currentFrame <= 59) { image = softWall2; }
     else if (currentFrame <= 60) { image = softWall1;}
     if (image != null) {
-      System.out.println("DrawCheck");
+      //System.out.println("DrawCheck");
       g2.drawImage(image, this.getColIndex()*48, this.getRowIndex()*48,48, 48, null);
     }
   }

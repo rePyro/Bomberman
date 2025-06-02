@@ -18,6 +18,7 @@ public class Player
   private int rowCount;
   private int tileSize;
   private boolean alive;
+  private boolean dying = false; // boolean to check if the player is dying
   private Tile[][] field; // the field of the map, used for collision detection
   // for sprite rendering
   private String direction = "down";
@@ -91,6 +92,7 @@ public class Player
     alive = false; // set player to dead
   }
   public void respawn(Map map) {
+    if (alive || dying) {return;}
     alive = true; // set player to alive
     if (playerNumber == 1) {
       map.setTile(1, 1, new Tile()); // clear the tile
@@ -219,6 +221,48 @@ public class Player
         }
       }
     }
+    else if (dying && playerNumber == 1) { // if the player is dying, draw the death animation
+        if (spriteCounter >= 140) {
+            image = ded9; // last frame of death animation
+        } else if (spriteCounter >= 120) {
+            image = ded8;
+        } else if (spriteCounter >= 100) {
+            image = ded7;
+        } else if (spriteCounter >= 80) {
+            image = ded6;
+        } else if (spriteCounter >= 60) {
+            image = ded5;
+        } else if (spriteCounter >= 40) {
+            image = ded4;
+        } else if (spriteCounter >= 20) {
+            image = ded3;
+        } else if (spriteCounter >= 0) {
+            image = ded2;
+        } else {
+            image = ded1; // first frame of death animation
+      }
+    }
+    else if (dying && playerNumber == 2) { // if the player is dying, draw the death animation
+        if (spriteCounter >= 140) {
+            image = ded9; // last frame of death animation
+        } else if (spriteCounter >= 120) {
+            image = ded8;
+        } else if (spriteCounter >= 100) {
+            image = ded7;
+        } else if (spriteCounter >= 80) {
+            image = ded6;
+        } else if (spriteCounter >= 60) {
+            image = ded5;
+        } else if (spriteCounter >= 40) {
+            image = ded4;
+        } else if (spriteCounter >= 20) {
+            image = ded3;
+        } else if (spriteCounter >= 0) {
+            image = ded2;
+        } else {
+            image = ded1; // first frame of death animation
+      }
+    }
     // Draw the image if it's loaded
     //System.out.println("nothing detected");
     if (image != null) {
@@ -228,6 +272,7 @@ public class Player
   }
   
   public void updateSpriteVals() {
+    if (alive) {
     spriteCounter++;
     if (spriteCounter == 10) { // if 10 frames passed, flip sprite counter
       spriteNumber++;
@@ -235,6 +280,13 @@ public class Player
       if (spriteNumber == 4) { spriteNumber = 0; } // cycle back
     }
   }
+  else if (dying) {
+    spriteCounter++;
+    if (spriteCounter >= 160) {dying = false; spriteCounter = 0; System.out.println("Finished dying");} // reset sprite number and counter
+  }
+}
+
+  
 
   //accessors
   public int getPlayerNumber() {
@@ -242,6 +294,9 @@ public class Player
   }
   public boolean isAlive() {
     return alive; // return the alive status of the player
+  }
+  public boolean isDying() {
+    return dying; // return the dying status of the player
   }
   public int getX() {
     return x;
@@ -533,6 +588,8 @@ public class Player
 public void deathCheck(Map map) {
     if (alive == true && map.getTile(row, col).getTileType().equals("BombFire")) { // if the player is on a BombFire tile
       killPlayer(); // kill the player
+      dying = true; // set the player to dying
+      spriteNumber = 0; // reset the sprite number
       System.out.println("Player " + playerNumber + " has died!\nSkill Issue Loser heh"); // print death message
     }
 } 

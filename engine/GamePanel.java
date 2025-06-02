@@ -204,7 +204,7 @@ public class GamePanel extends JPanel implements Runnable {
         
       }
     }
-    if (player1.isAlive()) { // if player 1 is alive
+    if (player1.isAlive()||player1.isDying()) { // if player 1 is alive
     // g2.setColor(Color.magenta);
     // g2.fillRect(player1.colToX(),player1.rowToY(), tileSize, tileSize);
     player1.draw(g2);
@@ -212,7 +212,7 @@ public class GamePanel extends JPanel implements Runnable {
     // g2.setColor(Color.pink);
     // g2.fillRect(player1.getX(), player1.getY(), tileSize, tileSize); // fill the square with white                              
     } 
-    if (player2.isAlive()) { // if player 2 is alive
+    if (player2.isAlive()||player2.isDying()) { // if player 2 is alive
       // g2.setColor(Color.magenta);
       // g2.fillRect(player2.colToX(),player2.rowToY(), tileSize, tileSize);
       player2.draw(g2);                           

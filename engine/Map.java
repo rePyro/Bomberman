@@ -110,7 +110,6 @@ public class Map
       return; // No soft walls to update
     }
     for (int i = softWallUpdates.size() - 1; i >= 0; i--) {
-      System.out.print("W");
       SoftWall tile = softWallUpdates.get(i);
       if (tile.getCurrentFrame() == 0) {
       setTile(tile.getRowIndex(), tile.getColIndex(), new Tile(tile.getRowIndex(), tile.getColIndex()));

@@ -74,7 +74,7 @@ public BombFire clone() {
   
   public void draw(Graphics2D g2) {
     if (this.group == null) {
-      System.out.println("BombFire group is null, cannot draw.");
+      //System.out.println("BombFire group is null, cannot draw.");
       return; // If the group is null, we cannot draw the fire
     }
       int fuse = this.group.getFuse();

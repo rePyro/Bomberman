@@ -67,5 +67,7 @@ public Bomb clone() {
     }}
 
   }
-
+  public void setFuse(int fuse) {
+    this.fuse = fuse;
+  }
 }

@@ -10,7 +10,7 @@ public class GamePanel extends JPanel implements Runnable {
   private final int originalTileSize = 16; // original tile size
   private final int scale = 3; // scale factor, 48 pixels
 
-  private final int tileSize = originalTileSize * scale; // scaled tile size
+  public final int tileSize = originalTileSize * scale; // scaled tile size
   private final int maxScreenCol = 15; 
   private final int maxScreenRow = 9; 
   private final int screenWidth = tileSize * maxScreenCol; // 720 pixels
@@ -40,10 +40,9 @@ public class GamePanel extends JPanel implements Runnable {
     this.map = map;
     this.player1 = new Player(map, keyHandler);
     this.player2 = new Player(map, keyHandler);
-    //enemy stuff, still jank
-    //this.enemy1 = new Enemy(map, 1, 1);
-    //enemy1.setTarget(5,5);
-    //this.superMap = new SuperMap(map); // create a new super map object
+
+    this.enemy1 = new Enemy(map, 1, 1);
+    this.superMap = new SuperMap(map); // create a new super map object
   }
 
   public void startGameThread() {
@@ -73,6 +72,9 @@ public class GamePanel extends JPanel implements Runnable {
         // UPDATE: update information, ex. player position, map, etc.
         update();
         map.gameTick();
+        enemy1.enemyTick(); // update enemy position (Needs to be done before map updates)
+        map.gameTick();
+ 
         player1.updateSpriteVals();
         player2.updateSpriteVals();
 

@@ -11,6 +11,8 @@ public class Map
   private int fireFuse = 60; // default fuse for fire, can be changed later
   private int bombFuse = 180; // default fuse for bomb, can be changed later
   private int bombPower = 2; // default power for bomb, can be changed later
+  private int currentTick = 0; // tick counter for game ticks
+  private int ticksPerSecond = 60; // number of ticks per second, can be changed later
   // constructor
   public Map() {
     field = new Tile[9][15]; // initialize empty field
@@ -89,9 +91,17 @@ public class Map
 }
   //GAME TICK
   public void gameTick() {
-    // check for explosions
+    if (currentTick == ticksPerSecond) {
+      currentTick = 0; // reset tick counter
+      mapUpdate(); // update the map
+    } else {
+      currentTick++;
+    }
+  }
+  public void mapUpdate() {
+    // 1. Check for explosions
     explodeCheck();
-    // check for bomb fires
+    // 2. Tick all fires
     fireTick();
   }
   // accessors
@@ -106,8 +116,7 @@ public class Map
       return false; // out of bounds
     }
     return !field[row][col].getSolid();
-  }
-  public int getTileSize() {
+  }lic int getTileSize() {
     return tileSize;
   }
   public ArrayList<Bomb> getBombList() {
@@ -124,6 +133,12 @@ public class Map
   }
   public int getBombPower() {
     return bombPower;
+  }
+  public int getHeight() {
+    return field.length * tileSize;
+  }
+  public int getWidth() {
+    return field[0].length * tileSize;
   }
   // mutators
   public void setTile(int row, int col, Tile tile) {
@@ -247,8 +262,10 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     Bomb targetBomb = (Bomb)field[r-num][c];
     targetBomb.detonate();
 } else if (field[r-num][c].getBreakable() == true) {
-    setTile(r-num, c, new Tile()); //This "explodes" walls
+    //setTile(r-num, c, new Tile()); //This "explodes" walls
     //field[r-num][c].breakTile();
+   //setTile(r-num, c, new Tile()); //This "explodes" walls
+   addBombFire(group, r-num, c);
 }
           }
         }
@@ -266,8 +283,10 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     Bomb targetBomb = (Bomb)field[r+num][c];
     targetBomb.detonate();
 } else if (field[r+num][c].getBreakable() == true) {
-    setTile(r+num, c, new Tile());
+    //setTile(r+num, c, new Tile());
     //field[r+num][c].breakTile();
+    //setTile(r+num, c, new Tile());
+    addBombFire(group, r+num, c);
 }
           }
         }
@@ -285,8 +304,10 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     Bomb targetBomb = (Bomb)field[r][c-num];
     targetBomb.detonate();
 } else if (field[r][c-num].getBreakable() == true) {
-  setTile(r, c-num, new Tile());
+  //setTile(r, c-num, new Tile());
   //field[r][c-num].breakTile();
+  //setTile(r, c-num, new Tile());
+  addBombFire(group, r, c-num);
 }
           }
         }
@@ -304,8 +325,10 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     Bomb targetBomb = (Bomb)field[r][c+num];
     targetBomb.detonate();
 } else if (field[r][c+num].getBreakable() == true) {
-    setTile(r, c+num, new Tile());
+    //setTile(r, c+num, new Tile());
     //field[r][c+num].breakTile();
+    //setTile(r, c+num, new Tile());
+    addBombFire(group, r, c+num);
 }
           }
         }
@@ -332,4 +355,20 @@ public void addBombFire(BombFireGroup group, int row, int col) {
       System.out.println();
     }
   }
+ 
+  public Map copyWithModifiedFuses(double bombFuseMultiplier, int fireFuseAdd) {
+    Map newMap = new Map(this); // Deep copy
+
+    // Multiply all bomb fuses
+    for (Bomb bomb : newMap.getBombList()) {
+        bomb.setFuse((int)(bomb.getFuse() * bombFuseMultiplier));
+    }
+
+    // Add fireFuseAdd to all BombFireGroup fuses
+    for (BombFireGroup group : newMap.getBombFireList()) {
+        group.setFuse(group.getFuse() + fireFuseAdd);
+    }
+
+    return newMap;
+}
 }

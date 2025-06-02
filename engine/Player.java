@@ -25,11 +25,24 @@ public class Player
   private BufferedImage up1, up2, down1, down2, left1, left2, right1, right2; // movement sprites
   private BufferedImage ded1, ded2, ded3, ded4, ded5, ded6, ded7, ded8, ded9; // death sprites
 
-  //constructors
   public Player(Map map, int row, int col, KeyHandler keyHandler) {
     this(map, keyHandler);
     this.row = row; // overwrite the row to the given row
     this.col = col; // overwrite the column to the given column
+=======
+  //constructor
+  public Player(Map map, int row, int col) {
+    playerCount++;
+    playerNumber = playerCount; // assign the current player count to this player
+    x = (int)((col)*48);
+    y = (int)((row)*48);
+    this.row = row;
+    this.col = col;
+    tileSize = 48; // size of the tile in pixels
+    speed = 4;
+    rowCount = map.getField().length;
+    field = map.getField(); // get the field from the map
+    //getPlayerImage();
   }
   public Player(Map map, KeyHandler keyHandler) {
     playerCount++;
@@ -51,6 +64,25 @@ public class Player
     this.field = map.getField(); 
     this.keyHandler = keyHandler;
     getPlayerImage();
+    playerNumber = playerCount; // assign the current player count to this player
+    for (int i = 0; i < map.getField().length; i++) {
+      for (int j = 0; j < map.getField()[i].length; j++) {
+        if (map.getField()[i][j].getTileType().equals("SpawnTile") &&
+        ((SpawnTile)(map.getField()[i][j])).getSpawnNumber() == playerNumber) { // find the first empty tile
+          row = i;
+          col = j;
+          break;
+        }
+      }
+    }
+    this.row = row;
+    this.col = col;
+    x = (int)((col)*48);
+    y = (int)((row)*48);
+    speed = 4;
+    rowCount = map.getField().length;
+    field = map.getField(); // get the field from the map
+    //getPlayerImage();
   }
 
 
@@ -121,7 +153,8 @@ public class Player
   public int getSpriteCounter() { return spriteCounter; }
   public void setSpriteNumber(int input) { spriteNumber = input; }
   public void setSpriteCounter(int input) { spriteCounter = input; }
-
+  public KeyHandler getKeyHandler() { return keyHandler; }
+  public void setKeyHandler(KeyHandler keyHandler) { this.keyHandler = keyHandler; }
   public void draw(Graphics2D g2) {
     BufferedImage image = null; // variable to hold the image to be drawn
     if (alive && playerNumber == 1) {
@@ -216,6 +249,9 @@ public class Player
   }
   public int getSpeed() {
     return speed;
+  }
+  public void setSpeed(int speed) {
+    this.speed = speed;
   }
   public int getRow() {
     return row;

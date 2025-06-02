@@ -1,4 +1,10 @@
 // package declarations and imports here;
+
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 public class Tile implements Cloneable {
     // variables
     private String tileType;
@@ -21,14 +27,14 @@ public class Tile implements Cloneable {
     }
     //Clone
     @Override
-public Tile clone() {
-    try {
-        return (Tile) super.clone();
-    } catch (CloneNotSupportedException e) {
-        // Should not happen if Tile implements Cloneable
-        throw new AssertionError();
+    public Tile clone() {
+        try {
+            return (Tile) super.clone();
+        } catch (CloneNotSupportedException e) {
+            // Should not happen if Tile implements Cloneable
+            throw new AssertionError();
+        }
     }
-}
 
 
     // accessors
@@ -43,5 +49,5 @@ public Tile clone() {
     }
 
     // methods
-    
+    public void breakTile() {} // to be overridden by subclasses if needed
 }

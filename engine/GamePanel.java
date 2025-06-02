@@ -21,6 +21,7 @@ public class GamePanel extends JPanel implements Runnable {
   private Player player2;
   
   private Map map; // map object
+  private TileImageStorage tileImageStorage = new TileImageStorage(); // tile image storage object
   private Enemy enemy1;
   private SuperMap superMap; // super map object, for future use
   
@@ -178,23 +179,17 @@ public class GamePanel extends JPanel implements Runnable {
     for (int row = 0; row < map.getField().length; row++) {
       for (int col = 0; col < map.getField()[0].length; col++) {
         if (map.getField()[row][col].getTileType().equals("HardWall")) {
-          g2.setColor(Color.green);
-          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
+          tileImageStorage.draw(g2, "HardWall", map.colToX(col), map.rowToY(row), tileSize);
         } else if (map.getField()[row][col] instanceof SoftWall) {
-          g2.setColor(Color.blue);
-          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
+          tileImageStorage.draw(g2, "SoftWall", map.colToX(col), map.rowToY(row), tileSize);
         } else if (map.getField()[row][col] instanceof SpawnTile) {
-          g2.setColor(Color.red);
-          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
-          } else if (map.getField()[row][col] instanceof Bomb) {
-          g2.setColor(Color.black);
-          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
-          } else if (map.getField()[row][col] instanceof BombFire) {
-          g2.setColor(Color.orange);
-          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
+          //tileImageStorage.draw(g2, "SpawnTile", map.colToX(col), map.rowToY(row), tileSize);
+        } else if (map.getField()[row][col] instanceof Bomb) {
+          tileImageStorage.draw(g2, "Bomb", map.colToX(col), map.rowToY(row), tileSize);
+        } else if (map.getField()[row][col] instanceof BombFire) {
+          tileImageStorage.draw(g2, "Explosion", map.colToX(col), map.rowToY(row), tileSize);
         } else {
-          g2.setColor(Color.white);
-          g2.fillRect(map.colToX(col), map.rowToY(row), tileSize, tileSize);
+          tileImageStorage.draw(g2, "Tile", map.colToX(col), map.rowToY(row), tileSize);
         }
       }
     }

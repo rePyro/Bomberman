@@ -10,8 +10,7 @@ public class Map
   private ArrayList<BombFireGroup> bombFireList;
   private ArrayList<SoftWall> softWallUpdates;
   private int fireFuse = 60; // default fuse for fire, can be changed later
-  private int bombFuse = 180; // default fuse for bomb, can be changed later
-  private int bombPower = 2; // default power for bomb, can be changed later
+  private int bombFuse = 180; // default fuse for bomb, can be changed later // default power for bomb, can be changed later
   private int currentTick = 0; // tick counter for game ticks
   private int ticksPerSecond = 60; // number of ticks per second, can be changed later
   // constructor
@@ -89,7 +88,6 @@ public class Map
 
     this.fireFuse = other.fireFuse;
     this.bombFuse = other.bombFuse;
-    this.bombPower = other.bombPower;
 }
   //GAME TICK
   public void gameTick() {
@@ -112,7 +110,14 @@ public class Map
     for (int i = softWallUpdates.size() - 1; i >= 0; i--) {
       SoftWall tile = softWallUpdates.get(i);
       if (tile.getCurrentFrame() == 0) {
-      setTile(tile.getRowIndex(), tile.getColIndex(), new Tile(tile.getRowIndex(), tile.getColIndex()));
+        int pCount = 25; int pSpeed = 50; int pPower = 75;
+        int choice = (int)(100*Math.random())+1;
+        Tile tileReplace = new Tile();
+        if (choice <= pCount) {tileReplace = new CountUpgrade(); }
+        else if (choice <= pSpeed) {tileReplace = new SpeedUpgrade(); }
+        else if (choice <= pPower) {tileReplace = new PowerUpgrade(); }
+        tileReplace.setRowIndex(tile.getRowIndex());tileReplace.setColIndex(tile.getColIndex());
+      setTile(tile.getRowIndex(), tile.getColIndex(), tileReplace);
       softWallUpdates.remove(i);
       }
       else tile.update();
@@ -153,9 +158,6 @@ public class Map
   }
   public int getBombFuse() {
     return bombFuse;
-  }
-  public int getBombPower() {
-    return bombPower;
   }
   public int getHeight() {
     return field.length * tileSize;
@@ -233,6 +235,17 @@ public void addBombFire(BombFireGroup group, int row, int col) {
       bombList.add(bomb);
     }
   }
+  public void addBomb(Player player) {
+    if (player.canAddBomb())
+    {if (!field[player.getRow()][player.getCol()].getTileType().equals("Bomb")) { // check if the tile is not already a bomb
+      System.out.println("Spawning a bomb");
+      Bomb bomb = new Bomb(player);
+      setTile(player.getRow(), player.getCol(), bomb);
+      bombList.add(bomb);
+    }
+  }else {System.out.println("Can't add a bomb lol goober");
+  }
+}
   private static final int[][] DIRECTIONS = {
     {-1, 0}, // up
     {1, 0},  // down
@@ -260,6 +273,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
                     blowInDirection(bomb, 1, group, dir[0], dir[1]);
                 }
                 addBombFire(group, bomb.getRow(), bomb.getCol());
+                bomb.remove();
                 bombList.remove(i);
                 exploded = true;
             }

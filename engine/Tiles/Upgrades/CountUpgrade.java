@@ -5,4 +5,5 @@ public class CountUpgrade extends UpgradeBase
   public CountUpgrade() {
     super("CountUpgrade");
   }
+  
 }

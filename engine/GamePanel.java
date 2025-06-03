@@ -98,6 +98,8 @@ public class GamePanel extends JPanel implements Runnable {
   public void update() {
     player1.deathCheck(map); // check if player 1 is dead
     player2.deathCheck(map); // check if player 2 is dead
+    player1.upgradeCheck(map); //Upgrades
+    player2.upgradeCheck(map); //Upgrades
     //enemy1.deathCheck(map); // check if enemy 1 is dead
     //keyHandler.setLeftPressed(true);
     
@@ -126,15 +128,13 @@ public class GamePanel extends JPanel implements Runnable {
     //Actions that require life
     if (keyHandler.getEJustPressed()) {
     if (player1.isAlive()) {
-      map.addBomb(player1.getRow(), player1.getCol());
-      System.out.println("SpawnBomb (if bomb aready there, not re-spawned)");
+      map.addBomb(player1);
     } else {System.out.println("heh ded men no get bomb (p1)");}
       keyHandler.resetEJustPressed();
     }
     if (keyHandler.getEnterJustPressed()) {
       if (player2.isAlive()) {
-      map.addBomb(player2.getRow(), player2.getCol());
-      System.out.println("SpawnBomb (if bomb aready there, not re-spawned)");
+      map.addBomb(player2);
     } else {System.out.println("heh ded men no get bomb (p2)");}
       keyHandler.resetEnterJustPressed();
     }

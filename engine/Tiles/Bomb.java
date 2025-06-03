@@ -9,7 +9,8 @@ import javax.imageio.ImageIO;
 
 public class Bomb extends Tile {
   // variables
-  private int fuse;
+  private Player player; // ID of the player who placed the bomb
+  private int fuse = 180;
   private int row;
   private int col;
   private int power;
@@ -23,6 +24,15 @@ public class Bomb extends Tile {
     this.col = col;
     fuse = 180; 
     power = 1;
+    getBombImage();
+  }
+  public Bomb(Player player) {
+    super("Bomb", true, true);
+    row = player.getRow();
+    col = player.getCol();
+    this.player = player;
+    this.power = player.getPower();
+    player.addBomb();
     getBombImage();
   }
   //clone
@@ -53,7 +63,13 @@ public Bomb clone() {
   public void detonate() {
     this.fuse = 0;
 }
+  public void remove() {
+    player.removeBomb();
+  }
 // accessors
+  public Player getPlayer() {
+    return player;
+  }
   public int getFuse() {
     return fuse;
   }
@@ -88,8 +104,6 @@ public Bomb clone() {
   public void explode(Tile[][] field) {
     for (int r = 1; r <= power; r++)
     {if (tryBreak(field, row +r, col)) {
-      
-
     }}
 
   }

@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.util.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 

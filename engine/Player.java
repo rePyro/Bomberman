@@ -12,7 +12,9 @@ public class Player
   private int x;
   private int y;
   private int speed;
-  private int bombCount;
+  private int maxBombCount = 1;
+  private int bombsPlaced = 0; // number of bombs the player can place
+  private int bombPower = 1;
   private int row;
   private int col;
   private int rowCount;
@@ -40,7 +42,7 @@ public class Player
     this.row = row;
     this.col = col;
     tileSize = 48; // size of the tile in pixels
-    speed = 4;
+    speed = 1;
     rowCount = map.getField().length;
     field = map.getField(); // get the field from the map
     //getPlayerImage();
@@ -59,7 +61,6 @@ public class Player
     this.x = (int)(col*48);
     this.y = (int)(row*48);
     this.speed = 1;
-    this.bombCount = 1;
     this.rowCount = map.getField().length;
     this.tileSize = 48;
     this.alive = true;
@@ -81,7 +82,6 @@ public class Player
     this.col = col;
     x = (int)((col)*48);
     y = (int)((row)*48);
-    speed = 4;
     rowCount = map.getField().length;
     field = map.getField(); // get the field from the map
     //getPlayerImage();
@@ -276,6 +276,9 @@ public class Player
   }
   public boolean isDying() {
     return dying; // return the dying status of the player
+  }
+  public int getPower() {
+    return bombPower;
   }
   public int getX() {
     return x;
@@ -572,6 +575,32 @@ public void deathCheck(Map map) {
       System.out.println("Player " + playerNumber + " has died!\nSkill Issue Loser heh"); // print death message
     }
 } 
+public void upgradeCheck(Map map) {
+    if (alive == true && map.getTile(row, col) instanceof CountUpgrade) { // if the player is on a CountUpgrade tile
+      maxBombCount++;
+      map.setTile(row, col, new Tile(row, col));
+      System.out.println("Player " + playerNumber + " has picked up a Count Upgrade!"); // print upgrade message
+    }
+    else if (alive == true && map.getTile(row, col) instanceof PowerUpgrade) { // if the player is on a PowerUpgrade tile
+      bombPower++;
+      map.setTile(row, col, new Tile(row, col));
+      System.out.println("Player " + playerNumber + " has picked up a Power Upgrade!"); // print upgrade message
+    }
+    else if (alive == true && map.getTile(row, col) instanceof SpeedUpgrade) { // if the player is on a SpeedUpgrade tile
+      speed++;
+      map.setTile(row, col, new Tile(row, col));
+      System.out.println("Player " + playerNumber + " has picked up a Speed Upgrade!"); // print upgrade message
+    }
+  }
+  public void addBomb() {
+    bombsPlaced++;
+  }
+  public void removeBomb() {
+    bombsPlaced--;
+  }
+  public boolean canAddBomb() {
+    return (bombsPlaced < maxBombCount);
+  }
   //Debugging
   public String toString() {
     return "Player " + playerNumber + ": (" + row + ", " + col + ") at (" + x + ", " + y + ")";

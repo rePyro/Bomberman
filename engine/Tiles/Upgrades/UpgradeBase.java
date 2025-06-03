@@ -10,7 +10,7 @@ public class UpgradeBase extends Tile
   }
 
   // methods
-  public void upgradePlayer() {
+  public void upgradePlayer(Player player) {
     //Player.addSpeed(5);
   }
 }

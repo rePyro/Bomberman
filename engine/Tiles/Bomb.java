@@ -117,11 +117,11 @@ public Bomb clone() {
 
     BufferedImage image = null;
     switch (currentCase) {
-      case 0: image = bomb1; break;
+      case 0: image = bomb3; break;
       case 1: image = bomb2; break;
-      case 2: image = bomb3; break;
+      case 2: image = bomb1; break;
       case 3: image = bomb2; break; // Loop back to the first frame
-      default: image = bomb1; break; // Default to the first frame if out of bounds
+      default: image = bomb3; break; // Default to the first frame if out of bounds
     }
     if (image != null) {
       //System.out.println("DrawCheck");

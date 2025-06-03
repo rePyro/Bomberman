@@ -221,41 +221,20 @@ public class Player
         }
       }
     }
-    else if (dying && playerNumber == 1) { // if the player is dying, draw the death animation
-        if (spriteCounter >= 140) {
+    else if (dying) { // if the player is dying, draw the death animation
+        if (spriteCounter >= 70) {
             image = ded9; // last frame of death animation
-        } else if (spriteCounter >= 120) {
-            image = ded8;
-        } else if (spriteCounter >= 100) {
-            image = ded7;
-        } else if (spriteCounter >= 80) {
-            image = ded6;
         } else if (spriteCounter >= 60) {
-            image = ded5;
-        } else if (spriteCounter >= 40) {
-            image = ded4;
-        } else if (spriteCounter >= 20) {
-            image = ded3;
-        } else if (spriteCounter >= 0) {
-            image = ded2;
-        } else {
-            image = ded1; // first frame of death animation
-      }
-    }
-    else if (dying && playerNumber == 2) { // if the player is dying, draw the death animation
-        if (spriteCounter >= 140) {
-            image = ded9; // last frame of death animation
-        } else if (spriteCounter >= 120) {
             image = ded8;
-        } else if (spriteCounter >= 100) {
+        } else if (spriteCounter >= 50) {
             image = ded7;
-        } else if (spriteCounter >= 80) {
-            image = ded6;
-        } else if (spriteCounter >= 60) {
-            image = ded5;
         } else if (spriteCounter >= 40) {
-            image = ded4;
+            image = ded6;
+        } else if (spriteCounter >= 30) {
+            image = ded5;
         } else if (spriteCounter >= 20) {
+            image = ded4;
+        } else if (spriteCounter >= 10) {
             image = ded3;
         } else if (spriteCounter >= 0) {
             image = ded2;
@@ -282,7 +261,7 @@ public class Player
   }
   else if (dying) {
     spriteCounter++;
-    if (spriteCounter >= 160) {dying = false; spriteCounter = 0; System.out.println("Finished dying");} // reset sprite number and counter
+    if (spriteCounter >= 80) {dying = false; spriteCounter = 0; System.out.println("Finished dying");} // reset sprite number and counter
   }
 }
 

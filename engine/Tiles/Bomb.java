@@ -14,6 +14,8 @@ public class Bomb extends Tile {
   private int col;
   private int power;
   private int tileSize = 48; // Assuming tileSize is 32 pixels, adjust as needed
+  private int currentFrame = 0;
+  private int currentCase = 0;
   
   public Bomb(int row, int col) {
     super("Bomb", true, true);
@@ -38,6 +40,15 @@ public Bomb clone() {
 //updates
   public void tickFuse() {
     fuse--;
+    currentFrame++;
+    if (currentFrame == 10) {
+      currentFrame = 0;
+      currentCase++;
+      if (currentCase > 3) {
+        currentCase = 0;
+      }
+    }
+  
   }
   public void detonate() {
     this.fuse = 0;
@@ -103,10 +114,15 @@ public Bomb clone() {
   
   public void draw(Graphics2D g2) {
     //System.out.println("Drawing BombFire at (" + row + ", " + col + ") with fuse: " + fuse);
-    BufferedImage image = null; 
-    if (fuse <= 60) { image = bomb3; } 
-    else if (fuse <= 120) { image = bomb2; }
-    else if (fuse <= 180) { image = bomb1; }
+
+    BufferedImage image = null;
+    switch (currentCase) {
+      case 0: image = bomb1; break;
+      case 1: image = bomb2; break;
+      case 2: image = bomb3; break;
+      case 3: image = bomb2; break; // Loop back to the first frame
+      default: image = bomb1; break; // Default to the first frame if out of bounds
+    }
     if (image != null) {
       //System.out.println("DrawCheck");
       g2.drawImage(image, col*48, row*48,48, 48, null);

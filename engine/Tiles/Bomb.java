@@ -1,4 +1,12 @@
 // package declarations and imports here;
+
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+
 public class Bomb extends Tile {
   // variables
   private int fuse;
@@ -13,6 +21,7 @@ public class Bomb extends Tile {
     this.col = col;
     fuse = 180; 
     power = 1;
+    getBombImage();
   }
   //clone
   @Override
@@ -77,5 +86,30 @@ public Bomb clone() {
   }
   public void setFuse(int fuse) {
     this.fuse = fuse;
+  }
+  // rendering
+  private BufferedImage bomb1, bomb2, bomb3;
+
+  public void getBombImage() {
+    try {
+      bomb1 = ImageIO.read(new File("graphics/TileSprites/Bomb-1.png"));
+      bomb2 = ImageIO.read(new File("graphics/TileSprites/Bomb-2.png"));
+      bomb3 = ImageIO.read(new File("graphics/TileSprites/Bomb-3.png"));
+    } catch (IOException e) {
+      e.printStackTrace(); // print the stack trace if there is an error loading the images
+      System.out.println("Error loading player images!"); // print an error message
+    }
+  }
+  
+  public void draw(Graphics2D g2) {
+    //System.out.println("Drawing BombFire at (" + row + ", " + col + ") with fuse: " + fuse);
+    BufferedImage image = null; 
+    if (fuse <= 60) { image = bomb3; } 
+    else if (fuse <= 120) { image = bomb2; }
+    else if (fuse <= 180) { image = bomb1; }
+    if (image != null) {
+      //System.out.println("DrawCheck");
+      g2.drawImage(image, col*48, row*48,48, 48, null);
+    }
   }
 }

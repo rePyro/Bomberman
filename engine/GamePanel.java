@@ -189,7 +189,7 @@ public class GamePanel extends JPanel implements Runnable {
         } else if (map.getField()[row][col] instanceof SpawnTile) {
           //tileImageStorage.draw(g2, "SpawnTile", map.colToX(col), map.rowToY(row), tileSize);
         } else if (map.getField()[row][col] instanceof Bomb) {
-          tileImageStorage.draw(g2, "Bomb", map.colToX(col), map.rowToY(row), tileSize);
+          ((Bomb)map.getField()[row][col]).draw(g2);
         } else if (map.getField()[row][col] instanceof BombFire) {
           ((BombFire)map.getField()[row][col]).draw(g2);
         } else if (map.getField()[row][col] instanceof CountUpgrade) {

@@ -289,8 +289,8 @@ public void blowInDirection(Bomb bomb, int num, BombFireGroup group, int dr, int
                 targetBomb.detonate();
             } else if (field[r][c].getBreakable() == true) {
                 softWallUpdates.add((SoftWall)getTile(r, c)); // add to soft wall updates
-                System.out.println("Blowing up breakable tile at (" + r + ", " + c + ")");
-                System.out.println(softWallUpdates);
+                //System.out.println("Blowing up breakable tile at (" + r + ", " + c + ")");
+                //System.out.println(softWallUpdates);
             }
         }
     }

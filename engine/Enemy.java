@@ -1,4 +1,11 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
 
 public class Enemy extends Player {
     int targetRow; int overallTargetRow;
@@ -50,6 +57,7 @@ public class Enemy extends Player {
         cautiousSuperMap.makePrediction();
         this.currentPath = weightedSafePathFindTo(cautiousSuperMap, getRow(), getCol(), overallTargetRow, overallTargetCol, 0);
         System.out.println(this.currentPath);
+        getEnemyImage();
     }
     public Enemy(Map map, int row, int col, KeyHandler keyHandler) {
         super(map, row, col, keyHandler);
@@ -59,6 +67,8 @@ public class Enemy extends Player {
         this.superMap = new SuperMap(map); // Initialize SuperMap with the current map
         this.keyHandler = keyHandler; // Initialize keyHandler
     }
+
+
     // Weighting methods for actions
     public void setDesire(int desire) {
     }
@@ -928,7 +938,8 @@ public class Enemy extends Player {
         }
         return bestTarget;
     }
-
+    //Graphics
+    private BufferedImage enemyImage;
     public boolean breakTileAt(int targetRow, int targetCol) {
         System.out.println("Enemy is trying to break tile at (" + targetRow + ", " + targetCol + ")");
         Tile targetTile = map.getTile(targetRow, targetCol);
@@ -1014,4 +1025,22 @@ public class Enemy extends Player {
         }
     }
 
+    public void getEnemyImage() {
+        try {
+            enemyImage = ImageIO.read(new File("graphics/GokuSprites/Goku.png")); // Load the enemy image from file
+        } catch (IOException e) {
+            e.printStackTrace(); // print the stack trace if there is an error loading the image
+            System.out.println("Error loading enemy image!"); // print an error message
+        }
+    }
+    public void draw(Graphics2D g2) {
+        //System.out.println("Drawing Enemy at (" + getRow() + ", " + getCol() + ")");
+        if (enemyImage != null) {
+            g2.drawImage(enemyImage, colToX(getCol()), rowToY(getRow()), null);
+        } else {
+            System.out.println("Enemy image not loaded, drawing placeholder.");
+            g2.setColor(Color.RED);
+            g2.fillRect(colToX(getCol()), rowToY(getRow()), map.getTileSize(), map.getTileSize());
+        }
+    }
 }

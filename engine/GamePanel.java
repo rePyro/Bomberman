@@ -220,10 +220,7 @@ public class GamePanel extends JPanel implements Runnable {
     if (enemy1.isAlive()) {
       //System.out.println("Drew Enemy");
       enemy1.draw(g2);
-      g2.setColor(Color.magenta);
-     g2.fillRect(enemy1.colToX(),enemy1.rowToY(), tileSize, tileSize);
-     g2.setColor(Color.lightGray);
-     g2.fillRect(enemy1.getX(), enemy1.getY(), tileSize, tileSize); // fill the square with white          
+       // fill the square with white          
     //System.out.println("Drew Goku");
      
   }

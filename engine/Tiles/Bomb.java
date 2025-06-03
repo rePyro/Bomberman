@@ -72,8 +72,6 @@ public Bomb clone() {
   public int getX() {
     return col * tileSize;
   }
-  //Lazy
-  // TODO: make Bomb functions with gameticks
   public boolean tryBreak(Tile[][] field, int row, int col) {
     try {
       if (field[row][col].getBreakable()) {

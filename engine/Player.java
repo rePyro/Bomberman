@@ -261,7 +261,7 @@ public class Player
   }
   else if (dying) {
     spriteCounter++;
-    if (spriteCounter >= 80) {dying = false; spriteCounter = 0; System.out.println("Finished dying");} // reset sprite number and counter
+    if (spriteCounter >= 120) {dying = false; spriteCounter = 0; System.out.println("Finished dying");} // reset sprite number and counter
   }
 }
 
@@ -290,7 +290,8 @@ public class Player
     return speed;
   }
   public void setSpeed(int speed) {
-    this.speed = speed;
+    if (speed < 8) { this.speed = speed; }
+    else { this.speed = 8; }
   }
   public int getRow() {
     return row;
@@ -566,7 +567,7 @@ public class Player
       return false;
     }
   }
-  //Death Stuff (GAMEPLAY?!)
+  //Death/upgrade Stuff (GAMEPLAY?!)
 public void deathCheck(Map map) {
     if (alive == true && map.getTile(row, col).getTileType().equals("BombFire")) { // if the player is on a BombFire tile
       killPlayer(); // kill the player
@@ -577,17 +578,17 @@ public void deathCheck(Map map) {
 } 
 public void upgradeCheck(Map map) {
     if (alive == true && map.getTile(row, col) instanceof CountUpgrade) { // if the player is on a CountUpgrade tile
-      maxBombCount++;
+      if (maxBombCount < 8) {maxBombCount++;}
       map.setTile(row, col, new Tile(row, col));
       System.out.println("Player " + playerNumber + " has picked up a Count Upgrade!"); // print upgrade message
     }
     else if (alive == true && map.getTile(row, col) instanceof PowerUpgrade) { // if the player is on a PowerUpgrade tile
-      bombPower++;
+      if (bombPower < 8) {bombPower++;}
       map.setTile(row, col, new Tile(row, col));
       System.out.println("Player " + playerNumber + " has picked up a Power Upgrade!"); // print upgrade message
     }
     else if (alive == true && map.getTile(row, col) instanceof SpeedUpgrade) { // if the player is on a SpeedUpgrade tile
-      speed++;
+      if (speed < 8) {speed++;}
       map.setTile(row, col, new Tile(row, col));
       System.out.println("Player " + playerNumber + " has picked up a Speed Upgrade!"); // print upgrade message
     }

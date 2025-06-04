@@ -11,8 +11,8 @@ public class GamePanel extends JPanel implements Runnable {
   private final int scale = 3; // scale factor, 48 pixels
 
   public final int tileSize = originalTileSize * scale; // scaled tile size
-  private final int maxScreenCol = 15; 
-  private final int maxScreenRow = 9; 
+  private final int maxScreenCol = 21; 
+  private final int maxScreenRow = 13; 
   private final int screenWidth = tileSize * maxScreenCol; // 720 pixels
   private final int screenHeight = tileSize * maxScreenRow; // 432 pixels
   
@@ -74,7 +74,7 @@ public class GamePanel extends JPanel implements Runnable {
         map.gameTick();
         if (enemy1.isAlive()) { // if enemy is alive
           enemy1.updateSpriteVals(); // update enemy sprite values
-        enemy1.enemyTick(); // update enemy position (Needs to be done before map updates)
+        //enemy1.enemyTick(); // update enemy position (Needs to be done before map updates)
         }
  
         player1.updateSpriteVals();
@@ -193,11 +193,11 @@ public class GamePanel extends JPanel implements Runnable {
         } else if (map.getField()[row][col] instanceof BombFire) {
           ((BombFire)map.getField()[row][col]).draw(g2);
         } else if (map.getField()[row][col] instanceof CountUpgrade) {
-          tileImageStorage.draw(g2, "CountUpgrade", map.colToX(col), map.rowToY(row), tileSize);
+          ((CountUpgrade)map.getField()[row][col]).draw(g2);
         } else if (map.getField()[row][col] instanceof PowerUpgrade) {
-          tileImageStorage.draw(g2, "PowerUpgrade", map.colToX(col), map.rowToY(row), tileSize);
+          ((PowerUpgrade)map.getField()[row][col]).draw(g2);
         } else if (map.getField()[row][col] instanceof SpeedUpgrade) {
-          tileImageStorage.draw(g2, "SpeedUpgrade", map.colToX(col), map.rowToY(row), tileSize);    
+          ((SpeedUpgrade)map.getField()[row][col]).draw(g2);    
         } else {
           tileImageStorage.draw(g2, "Tile", map.colToX(col), map.rowToY(row), tileSize);
         }

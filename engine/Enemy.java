@@ -18,12 +18,13 @@ public class Enemy extends Player{
     private List<Coordinate> currentPath = new ArrayList<>();
     private int pathIndex = 0;
     private boolean escapingBomb = false;
+    private boolean pathingToBomb = false;
     private static final Random rand = new Random();
     private int randomTargetCooldown = 0;
     private static final int RANDOM_TARGET_COOLDOWN_TICKS = 10;
 
     private double bombFuseMultiplier = 1;
-    private int fireFuseAdd = 90;
+    private int fireFuseAdd = 120;
 
     private boolean permission;
     
@@ -33,12 +34,13 @@ public class Enemy extends Player{
         this.targetRow = row;
         this.targetCol = col;
         this.map = map;
-        this.setSpeed(1);
+        this.setSpeed(3);
         this.setOverallTarget(-1, -1); // Default overall target to bottom-right corner
         this.currentPath = new ArrayList<>();
         this.pathIndex = 0;
         this.escapingBomb = false;
         this.ticksPerTile = (int)(map.getTileSize()/getSpeed());
+        setSpeedCap(2);
         getEnemyImage();
     }
     public Enemy(Map map, int row, int col, KeyHandler keyHandler) {
@@ -63,7 +65,7 @@ public class Enemy extends Player{
         Map cautiousMap = map.copyWithModifiedFuses(bombFuseMultiplier, fireFuseAdd);
         int currentTick = ticks;
         cautiousMap.mapUpdate(ticks);
-        while (currentTick < 4 * ticksPerSecond) {
+        while (currentTick < 200) {
             cautiousMap.mapUpdate();
             if (danger(cautiousMap, target.getRow(), target.getCol())) {
                 //System.out.println("Danger detected at (" + target.getRow() + ", " + target.getCol() + ") at tick " + currentTick);
@@ -76,7 +78,7 @@ public class Enemy extends Player{
      public boolean needToMove() {
         Map cautiousMap = map.copyWithModifiedFuses(bombFuseMultiplier, fireFuseAdd);
         int currentTick = 0;
-        while (currentTick < 7 * ticksPerSecond) {
+        while (currentTick < 200) {
             cautiousMap.mapUpdate();
             if (cautiousMap.getBombList().size() == 0) {
                 //System.out.println("No bombs on the map at tick " + currentTick);
@@ -103,11 +105,14 @@ public class Enemy extends Player{
         actionState++;
         //System.out.println("Enemy taking action at (" + getRow() + ", " + getCol() + ")");
         if (actionState == ticksPerTile) { actionState = 0;
-        if (permission && canAddBomb() && couldEscapeBomb() && worthPlacingBomb()) {map.addBomb(this);}
-        if (needToMove() && !escapingBomb && bestEscapePath(map, getRow(), getCol()) != null) {currentPath = bestEscapePath(map, getRow(), getCol()).getPath(); 
-            escapingBomb = true; pathIndex = 0; System.out.println("Enemy needs to move, found escape path: " + currentPath);} 
-            else if (!escapingBomb && currentPath.isEmpty()) {currentPath = randomPath(map, getRow(), getCol()).getPath(); pathIndex = 0;
-            System.out.println("Enemy is not escaping a bomb, found random path: " + currentPath);}
+        if (permission && canAddBomb() && worthPlacingBomb() && couldEscapeBomb() ) {map.addBomb(this);}
+        if (needToMove() && !escapingBomb) {Path path = bestEscapePath(map, getRow(), getCol()); if (path != null) {currentPath = path.getPath(); 
+            escapingBomb = true; pathIndex = 0; System.out.println("Enemy needs to move, found escape path: " + currentPath);}} 
+            else if (!escapingBomb && !pathingToBomb && currentPath.isEmpty()) {
+                Path path = bestBombPath(map, getRow(), getCol()); 
+                if (path != null) {currentPath = path.getPath(); pathIndex = 0; pathingToBomb = true; System.out.println("Set path to go BOMB WOOHOO");}
+            else {currentPath = randomPath(map, getRow(), getCol()).getPath(); pathIndex = 0;
+            System.out.println("Enemy is not escaping a bomb, found random path: " + currentPath);}}
             System.out.println("Enemy current path: " + currentPath + " at index " + pathIndex);
     }
         pathFind();
@@ -136,6 +141,7 @@ public class Enemy extends Player{
                     System.out.println("Now at target coordinates: (" + getRow() + ", " + getCol() + ")");
                     System.out.println("Clearing current path, enemy has reached the target.");
                     currentPath.clear(); // <-- Clear the path when finished
+                    pathingToBomb = false;
                     escapingBomb = false; // Reset escapingBomb when the path is finished
                 }
             }
@@ -190,8 +196,8 @@ public class Enemy extends Player{
     public boolean couldEscapeBombAt(int row, int col) {
         // Use a prediction map with normal bomb fuses but longer fire fuse for the enemy
         Map cautiousMap = map.copyWithModifiedFuses(bombFuseMultiplier, fireFuseAdd);
-        cautiousMap.addBomb(row, col);
-
+        Enemy placer = new Enemy(this); placer.setRow(row); placer.setCol(col);
+        cautiousMap.addBomb(placer);
         Path best = bestEscapePath(cautiousMap, row, col);
         if (best == null) {
             //System.out.println("No valid escape path found for bomb at (" + row + ", " + col + ")");
@@ -228,7 +234,7 @@ public class Enemy extends Player{
         return worth;
     }
     public boolean worthPlacingBombAt(int row, int col) {
-        int power = 2;
+        int power = this.getPower();
         Tile tile = map.getTile(row, col);
         if (tile instanceof Bomb) {
             power = ((Bomb) tile).getPower();
@@ -288,10 +294,12 @@ public class Enemy extends Player{
             Coordinate last = path.get(path.size() - 1);
             int row = last.getRow();
             int col = last.getCol();
+            if (!validPaths.isEmpty())
+            {if (path.size() > validPaths.get(0).getPath().size()) {break;}}
 
             // How do I make it so that I only check the destination tile for all future ticks after arrival, this is making it check from the current tick the game is at
             boolean safe = true;
-            for (int t = 0; t <= 7*ticksPerSecond; t+=ticksPerTile) {
+            for (int t = 0; t <= 4*ticksPerSecond; t+=ticksPerTile) {
                 Map fm = map.mapUpdatedByTicks(t);
                 if (fm == null || danger(fm, row, col)) {
                     safe = false;
@@ -301,6 +309,8 @@ public class Enemy extends Player{
             if (safe) {
                 boolean isStart = (row == startRow && col == startCol);
                 if (!isStart || (path.size() == 1 && !(map.getTile(row, col) instanceof Bomb))) {
+                    if (!validPaths.isEmpty())
+            {if (path.size() < validPaths.get(0).getPath().size()) {validPaths.clear();}}
                     validPaths.add(new Path(path, path.size() - 1));
                     //System.out.println("ADDED ESCAPE PATH TO LIST: " + path);
                 }
@@ -353,8 +363,8 @@ public class Enemy extends Player{
         if (row < 0 || row >= map.getHeight() || col < 0 || col >= map.getWidth()) return false;
         try {
             Tile t = map.getTile(row, col);
-            if (allowBomb && t instanceof Bomb) return true;
-            return !(t instanceof HardWall) && !(t instanceof SoftWall) && !(t instanceof Bomb);
+            //if (allowBomb && t instanceof Bomb) return true;
+            return !(t instanceof HardWall) && !(t instanceof SoftWall) && !(t instanceof Bomb) && !(t instanceof BombFire);
         } catch (ArrayIndexOutOfBoundsException e) {
             return false;
         }
@@ -378,8 +388,83 @@ public class Enemy extends Player{
                 if (!options.isEmpty()) {path.add(options.get(rand.nextInt(options.size())));}        
         return new Path(path, path.size());
     }
-
+    //More advanced targetSetting
     //Clone method
+    
+      public List<Path> findBombPaths(Map map, int startRow, int startCol) {
+        System.out.println("TAG");
+        Queue<List<Coordinate>> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        List<Coordinate> startPath = new ArrayList<>();
+        startPath.add(new Coordinate(startRow, startCol));
+        queue.add(startPath);
+        visited.add(startRow + "," + startCol);
+
+        int[][] dirs = { {1,0}, {-1,0}, {0,1}, {0,-1} };
+        List<Path> validPaths = new ArrayList<>();
+
+        while (!queue.isEmpty()) {
+            List<Coordinate> path = queue.poll();
+            Coordinate last = path.get(path.size() - 1);
+            int row = last.getRow();
+            int col = last.getCol();
+            if (!validPaths.isEmpty())
+            {if (path.size() > validPaths.get(0).getPath().size()) {break;}}
+
+            // How do I make it so that I only check the destination tile for all future ticks after arrival, this is making it check from the current tick the game is at
+            
+            if (!needToMove(map, 0, new Coordinate(row, col)) && worthPlacingBombAt(row, col) && couldEscapeBombAt(row, col)) {
+
+                boolean isStart = (row == startRow && col == startCol);
+                if (!isStart || (path.size() == 1 && !(map.getTile(row, col) instanceof Bomb))) {
+                    if (!validPaths.isEmpty())
+            {if (path.size() < validPaths.get(0).getPath().size()) {validPaths.clear();}}
+                    validPaths.add(new Path(path, path.size() - 1));
+                    System.out.println("ADDED BOMB PATH TO LIST: " + path);
+                }
+            }
+            // Try moving in all directions
+            for (int[] dir : dirs) {
+                int nrow = row + dir[0];
+                int ncol = col + dir[1];
+                String key = nrow + "," + ncol;
+                if (nrow < 0 || nrow >= map.getHeight() || ncol < 0 || ncol >= map.getWidth()) continue;
+                if (visited.contains(key)) continue;
+                boolean isStart = (path.size() == 1);
+                if (!canMoveTo(map.mapUpdatedByTicks(Math.min(path.size()*ticksPerTile, 7*ticksPerSecond)), nrow, ncol, isStart)) continue;
+                if (needToMove(map, 0, new Coordinate(nrow, ncol))) continue;
+
+                List<Coordinate> newPath = new ArrayList<>(path);
+                newPath.add(new Coordinate(nrow, ncol));
+                queue.add(newPath);
+                visited.add(key);
+            }
+        }
+        return validPaths;
+    }
+    public Path bestBombPath(Map map, int startRow, int startCol) {
+        //System.out.println("Finding best escape path from (" + startRow + ", " + startCol + ")");
+        List<Path> allPaths = findBombPaths(map, startRow, startCol);
+        if (allPaths.isEmpty()) return null;
+
+        // Find the minimum path length
+        int minLen = Integer.MAX_VALUE;
+        for (Path er : allPaths) {
+            if (er.path.size() < minLen) minLen = er.path.size();
+        }
+
+        // Collect all shortest paths
+        List<Path> shortest = new ArrayList<>();
+        for (Path er : allPaths) {
+            if (er.path.size() == minLen) shortest.add(er);
+        }
+
+        // Pick one at random if there are multiple
+        return shortest.get(rand.nextInt(shortest.size()));
+    }
+
+    
+    
     public Enemy(Enemy other) {
         super(new Map(other.map), other.getRow(), other.getCol());
         this.targetRow = other.targetRow;
@@ -405,6 +490,13 @@ public class Enemy extends Player{
       this.setX(48);
       this.setY(48);
   }
+    //Supering the upgrades
+    public void upgradeCheck(Map map) {
+    super.upgradeCheck(map);
+    if (isAlive() == true && map.getTile(getRow(), getCol()) instanceof SpeedUpgrade) { // if the player is on a SpeedUpgrade tile
+      this.ticksPerTile = (int)(map.getTileSize()/getSpeed());
+    }
+  }
     //Graphics
     private BufferedImage enemyImage;
 
@@ -419,11 +511,12 @@ public class Enemy extends Player{
     public void draw(Graphics2D g2) {
         //System.out.println("Drawing Enemy at (" + getRow() + ", " + getCol() + ")");
         if (enemyImage != null) {
-            g2.drawImage(enemyImage, getX(), getY(), null);
+         g2.drawImage(enemyImage, getX()-24, getY()-24, 2*map.getTileSize(), 2*map.getTileSize(), null);
         } else {
             System.out.println("Enemy image not loaded, drawing placeholder.");
             g2.setColor(Color.RED);
             g2.fillRect(getX(), getY(), map.getTileSize(), map.getTileSize());
         }
     }
+
 }

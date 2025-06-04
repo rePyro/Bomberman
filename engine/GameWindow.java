@@ -14,7 +14,6 @@ public class GameWindow
     window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     window.setVisible(true);
     window.setResizable(false);
-    window.setLocationRelativeTo(null);
     window.setIconImage(new ImageIcon("graphics/BombermanIcon.png").getImage());
   }
   
@@ -24,5 +23,6 @@ public class GameWindow
     //window.setSize(gamePanel.getPreferredSize());
     //window.setSize(768, 480);
     window.pack(); // pack the window to fit the panel
+        window.setLocationRelativeTo(null);
   }
 }

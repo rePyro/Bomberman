@@ -15,7 +15,7 @@ public class Map
   private int ticksPerSecond = 60; // number of ticks per second, can be changed later
   // constructor
   public Map() {
-    field = new Tile[13][21]; // initialize empty field
+    field = new Tile[9][15]; // initialize empty field
     tileSize = 48;
     bombList = new ArrayList<Bomb>();
     bombFireList = new ArrayList<BombFireGroup>();

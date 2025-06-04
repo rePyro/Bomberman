@@ -52,7 +52,7 @@ public class Bomb extends Tile {
 public Bomb clone() {
     Bomb cloned = (Bomb) super.clone();
     // Copy primitive fields (already done by super.clone()), but do it explicitly if needed:
-    cloned.fuse = 180;
+    cloned.fuse = this.fuse;
     cloned.row = this.row;
     cloned.col = this.col;
     cloned.power = this.power;

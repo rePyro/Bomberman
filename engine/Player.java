@@ -15,6 +15,7 @@ public class Player
   private int maxBombCount = 1;
   private int bombsPlaced = 0; // number of bombs the player can place
   private int bombPower = 1;
+  private int speedCap;
   private int row;
   private int col;
   private int rowCount;
@@ -595,7 +596,7 @@ public void upgradeCheck(Map map) {
       System.out.println("Player " + playerNumber + " has picked up a Power Upgrade!"); // print upgrade message
     }
     else if (alive == true && map.getTile(row, col) instanceof SpeedUpgrade) { // if the player is on a SpeedUpgrade tile
-      if (speed < 8) {speed++;}
+      if (speed < speedCap) {speed++;}
       map.setTile(row, col, new Tile(row, col));
       System.out.println("Player " + playerNumber + " has picked up a Speed Upgrade!"); // print upgrade message
     }
@@ -614,6 +615,9 @@ public void upgradeCheck(Map map) {
   }
   public int getMaxBombCount() {
     return maxBombCount; // return the maximum number of bombs that can be placed
+  }
+  public void setSpeedCap(int cap) {
+    speedCap = cap;
   }
   //Debugging
   public String toString() {

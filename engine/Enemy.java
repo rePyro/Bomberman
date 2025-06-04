@@ -23,7 +23,7 @@ public class Enemy extends Player{
     private static final int RANDOM_TARGET_COOLDOWN_TICKS = 10;
 
     private double bombFuseMultiplier = 1;
-    private int fireFuseAdd = 60;
+    private int fireFuseAdd = 80;
     
     //Constructors
     public Enemy(Map map, int row, int col) {
@@ -105,18 +105,20 @@ public class Enemy extends Player{
             escapingBomb = true; pathIndex = 0; System.out.println("Enemy needs to move, found escape path: " + currentPath);} 
             else if (!escapingBomb && currentPath.isEmpty()) {currentPath = randomPath(map, getRow(), getCol()).getPath(); pathIndex = 0;
             System.out.println("Enemy is not escaping a bomb, found random path: " + currentPath);}
+            System.out.println("Enemy current path: " + currentPath + " at index " + pathIndex);
     }
         pathFind();
     }
 
 
     public void pathFind() {
+        System.out.println("Enemy pathfinding at (" + getRow() + ", " + getCol() + ")");
         int y = getY();
         int x = getX();
         if (currentPath != null && pathIndex < currentPath.size()) {
             Coordinate step = currentPath.get(pathIndex);
-            int targetPixelY = rowToY(step.getRow());
-            int targetPixelX = colToX(step.getCol());
+            int targetPixelY = 48*step.getRow(); System.out.println("Target pixel Y: " + targetPixelY+"y = "+y);
+            int targetPixelX = 48*step.getCol(); System.out.println("Target pixel X: " + targetPixelX+"x = "+x);
             // Debug: print if the enemy is on a safe tile
             if (!danger(map, step.getRow(), step.getCol())) {
                 //System.out.println("Enemy found safe tile at (" + step.getRow() + ", " + step.getCol() + ")");
@@ -365,7 +367,7 @@ public class Enemy extends Player{
                 int ncol = startCol + dir[1];
                 if (nrow < 0 || nrow >= map.getHeight() || ncol < 0 || ncol >= map.getWidth()) continue;
                 if (needToMove(map, 0, new Coordinate(nrow, ncol))) continue;
-                
+                if (!canMoveTo(map, nrow, ncol)) continue;
                 options.add(new Coordinate(nrow, ncol));}
                 if (!options.isEmpty()) {path.add(options.get(rand.nextInt(options.size())));}        
         return new Path(path, path.size());

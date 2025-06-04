@@ -99,9 +99,10 @@ public class GamePanel extends JPanel implements Runnable {
   public void update() {
     player1.deathCheck(map); // check if player 1 is dead
     player2.deathCheck(map); // check if player 2 is dead
+    enemy1.deathCheck(map); // check if enemy 1 is dead
     player1.upgradeCheck(map); //Upgrades
     player2.upgradeCheck(map); //Upgrades
-    //enemy1.deathCheck(map); // check if enemy 1 is dead
+    enemy1.upgradeCheck(map); //Upgrades
     //keyHandler.setLeftPressed(true);
     
     if (keyHandler.getSpaceJustPressed()) {

@@ -46,7 +46,7 @@ public class Player
     rowCount = map.getField().length;
     field = map.getField(); // get the field from the map
     //getPlayerImage();
-    //this.alive = true; // set player to alive
+    this.alive = true; // set player to alive
   }
   public Player(Map map, KeyHandler keyHandler) {
     playerCount++;

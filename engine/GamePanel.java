@@ -74,6 +74,7 @@ public class GamePanel extends JPanel implements Runnable {
         map.gameTick();
         if (enemy1.isAlive()) { // if enemy is alive
           enemy1.updateSpriteVals(); // update enemy sprite values
+          enemy1.takeAction();
         //enemy1.enemyTick(); // update enemy position (Needs to be done before map updates)
         }
  

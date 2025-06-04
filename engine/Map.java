@@ -85,9 +85,15 @@ public class Map
             }
         }
     }
-
+    // Clone soft wall updates
+    this.softWallUpdates = new ArrayList<>();
+    for (SoftWall tile : other.softWallUpdates) {
+        this.softWallUpdates.add(tile.clone());
+    }
     this.fireFuse = other.fireFuse;
     this.bombFuse = other.bombFuse;
+    this.currentTick = other.currentTick;
+    this.ticksPerSecond = other.ticksPerSecond;
 }
   //GAME TICK
   public void gameTick() {
@@ -104,7 +110,6 @@ public class Map
   public void tileUpdate() {
     // Update all tiles in the field
     if (softWallUpdates == null) {
-      System.out.print("L");
       return; // No soft walls to update
     }
     for (int i = softWallUpdates.size() - 1; i >= 0; i--) {

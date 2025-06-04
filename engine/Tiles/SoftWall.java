@@ -20,6 +20,13 @@ public class SoftWall extends Tile
     setRowIndex(row); setColIndex(col);
     getSoftWallImage();
   }
+  @Override
+public SoftWall clone() {
+    SoftWall cloned = (SoftWall) super.clone();
+    // Copy primitive fields (already done by super.clone()), but do it explicitly if needed:
+    cloned.currentFrame = this.currentFrame;
+    return cloned;
+}
   public void update() {
     currentFrame--;
   }

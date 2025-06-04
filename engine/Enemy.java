@@ -23,7 +23,9 @@ public class Enemy extends Player{
     private static final int RANDOM_TARGET_COOLDOWN_TICKS = 10;
 
     private double bombFuseMultiplier = 1;
-    private int fireFuseAdd = 80;
+    private int fireFuseAdd = 90;
+
+    private boolean permission;
     
     //Constructors
     public Enemy(Map map, int row, int col) {
@@ -54,7 +56,8 @@ public class Enemy extends Player{
     public void setTarget(int row, int col) { this.targetRow = row; this.targetCol = col; }
     public void setTarget(Coordinate target) { this.targetRow = target.getRow(); this.targetCol = target.getCol(); }
     public void setOverallTarget(int row, int col) { this.overallTargetRow = row; this.overallTargetCol = col; }
-
+    public void togglePerms() {if (permission) {permission = false;} else if (!permission) {permission = true;}
+    System.out.println("Enemy permissions set to: "+permission);}
     //Checking if a tile is safe for all future ticks
     public boolean needToMove(Map map, int ticks, Coordinate target) {
         Map cautiousMap = map.copyWithModifiedFuses(bombFuseMultiplier, fireFuseAdd);
@@ -99,8 +102,8 @@ public class Enemy extends Player{
         if (!isAlive()) return;
         actionState++;
         //System.out.println("Enemy taking action at (" + getRow() + ", " + getCol() + ")");
-        if (actionState == 30) { actionState = 0;
-        if (canAddBomb() && couldEscapeBomb() && worthPlacingBomb()) {map.addBomb(this);}
+        if (actionState == ticksPerTile) { actionState = 0;
+        if (permission && canAddBomb() && couldEscapeBomb() && worthPlacingBomb()) {map.addBomb(this);}
         if (needToMove() && !escapingBomb && bestEscapePath(map, getRow(), getCol()) != null) {currentPath = bestEscapePath(map, getRow(), getCol()).getPath(); 
             escapingBomb = true; pathIndex = 0; System.out.println("Enemy needs to move, found escape path: " + currentPath);} 
             else if (!escapingBomb && currentPath.isEmpty()) {currentPath = randomPath(map, getRow(), getCol()).getPath(); pathIndex = 0;
@@ -112,13 +115,13 @@ public class Enemy extends Player{
 
 
     public void pathFind() {
-        System.out.println("Enemy pathfinding at (" + getRow() + ", " + getCol() + ")");
+        //System.out.println("Enemy pathfinding at (" + getRow() + ", " + getCol() + ")");
         int y = getY();
         int x = getX();
         if (currentPath != null && pathIndex < currentPath.size()) {
             Coordinate step = currentPath.get(pathIndex);
-            int targetPixelY = 48*step.getRow(); System.out.println("Target pixel Y: " + targetPixelY+"y = "+y);
-            int targetPixelX = 48*step.getCol(); System.out.println("Target pixel X: " + targetPixelX+"x = "+x);
+            int targetPixelY = 48*step.getRow(); //System.out.println("Target pixel Y: " + targetPixelY+"y = "+y);
+            int targetPixelX = 48*step.getCol(); //System.out.println("Target pixel X: " + targetPixelX+"x = "+x);
             // Debug: print if the enemy is on a safe tile
             if (!danger(map, step.getRow(), step.getCol())) {
                 //System.out.println("Enemy found safe tile at (" + step.getRow() + ", " + step.getCol() + ")");
@@ -313,6 +316,9 @@ public class Enemy extends Player{
                 boolean isStart = (path.size() == 1);
                 if (!canMoveTo(map.mapUpdatedByTicks(Math.min(path.size()*ticksPerTile, 7*ticksPerSecond)), nrow, ncol, isStart)) continue;
                 if (danger(map.mapUpdatedByTicks(Math.min(path.size()*ticksPerTile, 7*ticksPerSecond)), nrow, ncol)) continue;
+                if (danger(map.mapUpdatedByTicks(Math.min(path.size()*ticksPerTile, 7*ticksPerSecond)), nrow, ncol)) continue;
+                if (danger(map.mapUpdatedByTicks(Math.min((int)((path.size()-1)*ticksPerTile), 7*ticksPerSecond)), nrow, ncol)) continue;
+                if (danger(map.mapUpdatedByTicks(Math.min((int)((path.size()-1)*ticksPerTile), 7*ticksPerSecond)), nrow, ncol)) continue;
 
                 List<Coordinate> newPath = new ArrayList<>(path);
                 newPath.add(new Coordinate(nrow, ncol));
@@ -388,6 +394,17 @@ public class Enemy extends Player{
         this.bombFuseMultiplier = other.bombFuseMultiplier;
         this.fireFuseAdd = other.fireFuseAdd;
     }
+    //Respawn
+    public void respawn(Map map) {
+        deathCancel();
+    if (isAlive() || isDying()) {System.out.println("DEBUG"); return;}
+    setAlive();
+      map.setTile(1, 1, new Tile()); // clear the tile
+      this.setRow(1);
+      this.setCol(1);
+      this.setX(48);
+      this.setY(48);
+  }
     //Graphics
     private BufferedImage enemyImage;
 

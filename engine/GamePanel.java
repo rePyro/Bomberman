@@ -124,10 +124,8 @@ public class GamePanel extends JPanel implements Runnable {
     if (keyHandler.getPJustPressed()) {
       Map test = map.copyWithModifiedFuses(1,0);
       test.mapUpdate(200);
-      System.out.println("A"+map.getBombList());
-      System.out.println("A"+map.getBombList().size());
-      System.out.println("B"+test.getBombList());
-      System.out.println("B"+test.getBombList().size());
+      enemy1.togglePerms();
+      enemy1.respawn(map);
       keyHandler.resetPJustPressed();
     }
     //Actions that require life

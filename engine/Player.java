@@ -109,6 +109,12 @@ public class Player
       y = (int)((row)*48);
     }
   }
+  public void setAlive() {
+    this.alive = true;
+  }
+  public void deathCancel() {
+    {dying = false; spriteCounter = 0; System.out.println("Finished dying");}
+  }
   
   //rendering
   public void getPlayerImage() {

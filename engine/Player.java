@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.awt.Graphics2D;
 import java.io.File;
 
-public class Player 
+public class Player
 {
   private static int playerCount = 0; // static variable to keep track of players
   private int playerNumber; // instance variable to keep track of this player's number
@@ -47,6 +47,7 @@ public class Player
     field = map.getField(); // get the field from the map
     //getPlayerImage();
     this.alive = true; // set player to alive
+    this.bombsPlaced = 0; // set bombs placed to 0
   }
   public Player(Map map, KeyHandler keyHandler) {
     playerCount++;
@@ -600,7 +601,13 @@ public void upgradeCheck(Map map) {
     bombsPlaced--;
   }
   public boolean canAddBomb() {
-    return (bombsPlaced < maxBombCount);
+    return (bombsPlaced < maxBombCount && bombsPlaced >= 0); // check if the player can add a bomb
+  }
+  public int getBombsPlaced() {
+    return bombsPlaced; // return the number of bombs placed
+  }
+  public int getMaxBombCount() {
+    return maxBombCount; // return the maximum number of bombs that can be placed
   }
   //Debugging
   public String toString() {

@@ -16,6 +16,7 @@ public class Bomb extends Tile {
   private int tileSize = 48; // Assuming tileSize is 32 pixels, adjust as needed
   private int currentFrame = 0;
   private int currentCase = 0;
+  private boolean real;
   
   public Bomb(int row, int col) {
     super("Bomb", true, true);
@@ -23,6 +24,7 @@ public class Bomb extends Tile {
     this.col = col;
     fuse = 180; 
     power = 1;
+    real = true;
     getBombImage();
   }
   public Bomb(Player player) {
@@ -32,6 +34,17 @@ public class Bomb extends Tile {
     this.player = player;
     this.power = player.getPower();
     player.addBomb();
+    real = true;
+    getBombImage();
+  }
+  public Bomb(Player player, boolean real) {
+    super("Bomb", true, true);
+    row = player.getRow();
+    col = player.getCol();
+    this.player = player;
+    this.power = player.getPower();
+    if (real) {player.addBomb();}
+    this.real = real;
     getBombImage();
   }
   //clone
@@ -39,10 +52,11 @@ public class Bomb extends Tile {
 public Bomb clone() {
     Bomb cloned = (Bomb) super.clone();
     // Copy primitive fields (already done by super.clone()), but do it explicitly if needed:
-    cloned.fuse = this.fuse;
+    cloned.fuse = 180;
     cloned.row = this.row;
     cloned.col = this.col;
     cloned.power = this.power;
+    cloned.real = false;
     // If Bomb ever contains mutable objects, clone them here as well.
     return cloned;
 }
@@ -63,11 +77,17 @@ public Bomb clone() {
     this.fuse = 0;
 }
   public void remove() {
+    if (this.player != null) {
     player.removeBomb();
+    System.out.println("Bomb removed from player: " + player.getPlayerNumber());
+  }
   }
 // accessors
   public Player getPlayer() {
     return player;
+  }
+  public boolean isReal() {
+    return real;
   }
   public int getFuse() {
     return fuse;
@@ -139,4 +159,6 @@ public Bomb clone() {
       g2.drawImage(image, col*48, row*48,48, 48, null);
     }
   }
+
+
 }

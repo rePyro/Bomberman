@@ -247,11 +247,26 @@ public void addBombFire(BombFireGroup group, int row, int col) {
       Bomb bomb = new Bomb(player);
       setTile(player.getRow(), player.getCol(), bomb);
       bombList.add(bomb);
+      System.out.println("Bomb added to player: " + player.getPlayerNumber());
     }
-  }else {System.out.println("Can't add a bomb lol goober");
+  }else {System.out.println("Can't add a bomb lol goober"+player.getBombsPlaced());
   }
 }
-  private static final int[][] DIRECTIONS = {
+  public void addBomb(Player player, boolean real) {
+    if (player.canAddBomb())
+    {if (!field[player.getRow()][player.getCol()].getTileType().equals("Bomb")) { // check if the tile is not already a bomb
+      if (real) {System.out.println("Spawning a bomb");}
+      Bomb bomb = new Bomb(player, real);
+      setTile(player.getRow(), player.getCol(), bomb);
+      bombList.add(bomb);
+    }
+  }else {System.out.println("Can't add a bomb lol goober"+player.getBombsPlaced());
+  }
+}
+  
+
+
+private static final int[][] DIRECTIONS = {
     {-1, 0}, // up
     {1, 0},  // down
     {0, -1}, // left
@@ -262,6 +277,7 @@ public void addBombFire(BombFireGroup group, int row, int col) {
     for (int i = 0; i < bombList.size(); i++) {
         if (bombList.get(i).getFuse() > 0) {
             bombList.get(i).tickFuse();
+            //if (bombList.get(i).isReal()) {System.out.println("Real bomb");}
         }
     }
     // 2. Now, repeatedly process all bombs with fuse == 0 (chain reactions)
@@ -278,8 +294,10 @@ public void addBombFire(BombFireGroup group, int row, int col) {
                     blowInDirection(bomb, 1, group, dir[0], dir[1]);
                 }
                 addBombFire(group, bomb.getRow(), bomb.getCol());
-                bomb.remove();
-                bombList.remove(i);
+                if (bomb.isReal()) {
+                bomb.remove(); // remove the bomb from the player
+                }
+                this.bombList.remove(i);
                 exploded = true;
             }
         }

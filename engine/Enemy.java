@@ -6,11 +6,12 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-public class Enemy extends Player {
+public class Enemy extends Player{
     int targetRow; int overallTargetRow;
     int targetCol; int overallTargetCol;
     Map map;
     KeyHandler keyHandler;
+    private int actionState = 0; // 0 = idle, 1 = moving, 2 = placing bomb
     private int ticksPerTile;
     private int currentTick = 0;
     private int ticksPerSecond = 60;
@@ -21,8 +22,8 @@ public class Enemy extends Player {
     private int randomTargetCooldown = 0;
     private static final int RANDOM_TARGET_COOLDOWN_TICKS = 10;
 
-    private double bombFuseMultiplier = 2.5;
-    private int fireFuseAdd = 6;
+    private double bombFuseMultiplier = 1;
+    private int fireFuseAdd = 60;
     
     //Constructors
     public Enemy(Map map, int row, int col) {
@@ -57,18 +58,15 @@ public class Enemy extends Player {
     //Checking if a tile is safe for all future ticks
     public boolean needToMove(Map map, int ticks, Coordinate target) {
         Map cautiousMap = map.copyWithModifiedFuses(bombFuseMultiplier, fireFuseAdd);
-        int currentTick = 0;
-        while (currentTick < 7 * ticksPerSecond) {
-            cautiousMap = cautiousMap.mapUpdatedByTicks(ticks+currentTick);
-            if (cautiousMap == null) {
-                System.out.println("Cautious map is null at tick " + currentTick);
-                return false; // No need to move if the map is null
-            }
+        int currentTick = ticks;
+        cautiousMap.mapUpdate(ticks);
+        while (currentTick < 4 * ticksPerSecond) {
+            cautiousMap.mapUpdate();
             if (danger(cautiousMap, target.getRow(), target.getCol())) {
-                System.out.println("Danger detected at (" + target.getRow() + ", " + target.getCol() + ") at tick " + currentTick);
+                //System.out.println("Danger detected at (" + target.getRow() + ", " + target.getCol() + ") at tick " + currentTick);
                 return true; // Need to move
             }
-            currentTick += ticksPerTile;
+            currentTick ++;
         }
         return false;
     }
@@ -76,16 +74,15 @@ public class Enemy extends Player {
         Map cautiousMap = map.copyWithModifiedFuses(bombFuseMultiplier, fireFuseAdd);
         int currentTick = 0;
         while (currentTick < 7 * ticksPerSecond) {
-            cautiousMap = cautiousMap.mapUpdatedByTicks(currentTick);
-            if (cautiousMap == null) {
-                System.out.println("Cautious map is null at tick " + currentTick);
-                return false; // No need to move if the map is null
+            cautiousMap.mapUpdate();
+            if (cautiousMap.getBombList().size() == 0) {
+                //System.out.println("No bombs on the map at tick " + currentTick);
             }
             if (danger(cautiousMap, this.getRow(), this.getCol())) {
-                System.out.println("Danger detected at (" + this.getRow() + ", " + this.getCol() + ") at tick " + currentTick);
+                //System.out.println("Danger detected at (" + this.getRow() + ", " + this.getCol() + ") at tick " + currentTick);
                 return true; // Need to move
             }
-            currentTick += ticksPerTile;
+            currentTick++;
         }
         return false;
     }
@@ -100,8 +97,15 @@ public class Enemy extends Player {
     // taking actions
     public void takeAction() {
         if (!isAlive()) return;
+        actionState++;
         //System.out.println("Enemy taking action at (" + getRow() + ", " + getCol() + ")");
-        if (needToMove() && !escapingBomb && bestEscapePath(map, getRow(), getCol()) != null) {currentPath = bestEscapePath(map, getRow(), getCol()).getPath(); escapingBomb = true; pathIndex = 0; System.out.println("Enemy needs to move, found escape path: " + currentPath);}
+        if (actionState == 30) { actionState = 0;
+        if (canAddBomb() && couldEscapeBomb() && worthPlacingBomb()) {map.addBomb(this);}
+        if (needToMove() && !escapingBomb && bestEscapePath(map, getRow(), getCol()) != null) {currentPath = bestEscapePath(map, getRow(), getCol()).getPath(); 
+            escapingBomb = true; pathIndex = 0; System.out.println("Enemy needs to move, found escape path: " + currentPath);} 
+            else if (!escapingBomb && currentPath.isEmpty()) {currentPath = randomPath(map, getRow(), getCol()).getPath(); pathIndex = 0;
+            System.out.println("Enemy is not escaping a bomb, found random path: " + currentPath);}
+    }
         pathFind();
     }
 
@@ -125,6 +129,7 @@ public class Enemy extends Player {
                 } else {
                     randomTargetCooldown = RANDOM_TARGET_COOLDOWN_TICKS;
                     System.out.println("Now at target coordinates: (" + getRow() + ", " + getCol() + ")");
+                    System.out.println("Clearing current path, enemy has reached the target.");
                     currentPath.clear(); // <-- Clear the path when finished
                     escapingBomb = false; // Reset escapingBomb when the path is finished
                 }
@@ -162,16 +167,14 @@ public class Enemy extends Player {
     public int rowToY(int row) { return (int)((row)*map.getTileSize()); }
     public int colToX(int col) { return (int)((col)*map.getTileSize()); }
 
-/* 
+ 
     // --- Bomb escape logic using EscapeResult ---
     public boolean couldEscapeBomb() {
         // Use a prediction map with normal bomb fuses but longer fire fuse for the enemy
-        Map cautiousMap = map.copyWithModifiedFuses(bombFuseMultiplier, fireFuseAdd);
-        cautiousMap.addBomb(getRow(), getCol());
-        SuperMap bombPrediction = new SuperMap(cautiousMap);
-        bombPrediction.makePrediction();
-
-        EscapeResult best = bestEscapePath(bombPrediction, getRow(), getCol());
+        if (!this.canAddBomb()){return false;}
+        Map cautiousMap = map.copyWithModifiedFuses(1, fireFuseAdd);
+        cautiousMap.addBomb(new Enemy(this), false);
+        Path best = bestEscapePath(cautiousMap, getRow(), getCol());
         if (best == null) {
             //System.out.println("No valid escape path found for bomb at (" + getRow() + ", " + getCol() + ")");
             return false;
@@ -179,15 +182,12 @@ public class Enemy extends Player {
         //System.out.println("Best escape path chosen: " + best.path);
         return true;
     }
-
     public boolean couldEscapeBombAt(int row, int col) {
         // Use a prediction map with normal bomb fuses but longer fire fuse for the enemy
         Map cautiousMap = map.copyWithModifiedFuses(bombFuseMultiplier, fireFuseAdd);
         cautiousMap.addBomb(row, col);
-        SuperMap bombPrediction = new SuperMap(cautiousMap);
-        bombPrediction.makePrediction();
 
-        EscapeResult best = bestEscapePath(bombPrediction, row, col);
+        Path best = bestEscapePath(cautiousMap, row, col);
         if (best == null) {
             //System.out.println("No valid escape path found for bomb at (" + row + ", " + col + ")");
             return false;
@@ -197,7 +197,7 @@ public class Enemy extends Player {
     }
 
     public boolean worthPlacingBomb() {
-        int power = 2;
+        int power = this.getPower();
         Tile tile = map.getTile(getRow(), getCol());
         if (tile instanceof Bomb) {
             power = ((Bomb) tile).getPower();
@@ -246,8 +246,6 @@ public class Enemy extends Player {
         }
         return wallsBroken > 0;
     }
-
-    */
     public class Path {
         public List<Coordinate> path;
         public int length;
@@ -299,7 +297,7 @@ public class Enemy extends Player {
                 boolean isStart = (row == startRow && col == startCol);
                 if (!isStart || (path.size() == 1 && !(map.getTile(row, col) instanceof Bomb))) {
                     validPaths.add(new Path(path, path.size() - 1));
-                    System.out.println("ADDED ESCAPE PATH TO LIST: " + path);
+                    //System.out.println("ADDED ESCAPE PATH TO LIST: " + path);
                 }
             }
 
@@ -322,7 +320,6 @@ public class Enemy extends Player {
         }
         return validPaths;
     }
-
     public Path bestEscapePath(Map map, int startRow, int startCol) {
         //System.out.println("Finding best escape path from (" + startRow + ", " + startCol + ")");
         List<Path> allPaths = findAllEscapePaths(map, startRow, startCol);
@@ -358,6 +355,37 @@ public class Enemy extends Player {
         return canMoveTo(map, row, col, false);
     }
 
+    public Path randomPath(Map map, int startRow, int startCol) {
+        List<Coordinate> path = new ArrayList<>();
+        path.add(new Coordinate(startRow, startCol));
+        List<Coordinate> options = new ArrayList<>(path);
+        int[][] dirs = new int[][] { {1,0}, {-1,0}, {0,1}, {0,-1} };
+        for (int[] dir : dirs) {
+                int nrow = startRow + dir[0];
+                int ncol = startCol + dir[1];
+                if (nrow < 0 || nrow >= map.getHeight() || ncol < 0 || ncol >= map.getWidth()) continue;
+                if (needToMove(map, 0, new Coordinate(nrow, ncol))) continue;
+                
+                options.add(new Coordinate(nrow, ncol));}
+                if (!options.isEmpty()) {path.add(options.get(rand.nextInt(options.size())));}        
+        return new Path(path, path.size());
+    }
+
+    //Clone method
+    public Enemy(Enemy other) {
+        super(new Map(other.map), other.getRow(), other.getCol());
+        this.targetRow = other.targetRow;
+        this.targetCol = other.targetCol;
+        this.overallTargetRow = other.overallTargetRow;
+        this.overallTargetCol = other.overallTargetCol;
+        this.ticksPerTile = other.ticksPerTile;
+        this.currentTick = other.currentTick;
+        this.currentPath = new ArrayList<>(other.currentPath);
+        this.pathIndex = other.pathIndex;
+        this.escapingBomb = other.escapingBomb;
+        this.bombFuseMultiplier = other.bombFuseMultiplier;
+        this.fireFuseAdd = other.fireFuseAdd;
+    }
     //Graphics
     private BufferedImage enemyImage;
 

@@ -121,9 +121,12 @@ public class GamePanel extends JPanel implements Runnable {
       keyHandler.resetSpaceJustPressed();
     }
     if (keyHandler.getPJustPressed()) {
-      System.out.println("test: p just pressed");
-      superMap.makePrediction(); // make a prediction of the map
-      superMap.printPrediction(); // print the prediction
+      Map test = map.copyWithModifiedFuses(1,0);
+      test.mapUpdate(200);
+      System.out.println("A"+map.getBombList());
+      System.out.println("A"+map.getBombList().size());
+      System.out.println("B"+test.getBombList());
+      System.out.println("B"+test.getBombList().size());
       keyHandler.resetPJustPressed();
     }
     //Actions that require life

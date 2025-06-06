@@ -18,7 +18,6 @@ public class Player
   private int speedCap;
   private int row;
   private int col;
-  private int rowCount;
   private int tileSize;
   private boolean alive;
   private boolean dying = false; // boolean to check if the player is dying
@@ -44,7 +43,6 @@ public class Player
     this.col = col;
     tileSize = 48; // size of the tile in pixels
     speed = 1;
-    rowCount = map.getField().length;
     field = map.getField(); // get the field from the map
     //getPlayerImage();
     this.alive = true; // set player to alive
@@ -63,7 +61,6 @@ public class Player
     this.x = (int)(col*48);
     this.y = (int)(row*48);
     this.speed = 1;
-    this.rowCount = map.getField().length;
     this.tileSize = 48;
     this.alive = true;
     this.field = map.getField(); 
@@ -80,11 +77,8 @@ public class Player
         }
       }
     }
-    this.row = row;
-    this.col = col;
     x = (int)((col)*48);
     y = (int)((row)*48);
-    rowCount = map.getField().length;
     field = map.getField(); // get the field from the map
     //getPlayerImage();
   }

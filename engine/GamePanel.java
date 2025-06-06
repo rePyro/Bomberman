@@ -23,7 +23,7 @@ public class GamePanel extends JPanel implements Runnable {
   private Map map; // map object
   private TileImageStorage tileImageStorage = new TileImageStorage(); // tile image storage object
   private Enemy enemy1;
-  private SuperMap superMap; // super map object, for future use
+//  private SuperMap superMap; // super map object, for future use
   
   KeyHandler keyHandler = new KeyHandler(); // key handler for input
   Thread gameThread; // thread for the game loop
@@ -42,7 +42,7 @@ public class GamePanel extends JPanel implements Runnable {
     this.player2 = new Player(map, keyHandler);
 
     this.enemy1 = new Enemy(map, 1, 1);
-    this.superMap = new SuperMap(map); // create a new super map object
+//    this.superMap = new SuperMap(map); // create a new super map object
   }
 
   public void startGameThread() {
@@ -61,7 +61,6 @@ public class GamePanel extends JPanel implements Runnable {
     long lastTime = System.nanoTime();
     long currentTime;
     long timer = 0;
-    long drawCount = 0;
 
     while (gameThread != null) {
       currentTime = System.nanoTime();
@@ -84,13 +83,11 @@ public class GamePanel extends JPanel implements Runnable {
         // DRAW: paint the new screen
         repaint();
         delta--;
-        drawCount++;
         //System.out.println("test: upd + rep'd");
       }
 
       if (timer >= 1000000000) { // if 1 second has passed
         //System.out.println("FPS: " + drawCount); // print the FPS
-        drawCount = 0; // reset the draw count
         timer = 0; // reset the timer
       }
     }

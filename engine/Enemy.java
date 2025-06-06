@@ -20,8 +20,8 @@ public class Enemy extends Player{
     private boolean escapingBomb = false;
     private boolean pathingToBomb = false;
     private static final Random rand = new Random();
-    private int randomTargetCooldown = 0;
-    private static final int RANDOM_TARGET_COOLDOWN_TICKS = 10;
+//    private int randomTargetCooldown = 0;
+//    private static final int RANDOM_TARGET_COOLDOWN_TICKS = 10;
 
     private double bombFuseMultiplier = 1;
     private int fireFuseAdd = 120;
@@ -137,7 +137,7 @@ public class Enemy extends Player{
                     Coordinate nextStep = currentPath.get(pathIndex);
                     setTarget(nextStep.getRow(), nextStep.getCol());
                 } else {
-                    randomTargetCooldown = RANDOM_TARGET_COOLDOWN_TICKS;
+//                    randomTargetCooldown = RANDOM_TARGET_COOLDOWN_TICKS;
                     System.out.println("Now at target coordinates: (" + getRow() + ", " + getCol() + ")");
                     System.out.println("Clearing current path, enemy has reached the target.");
                     currentPath.clear(); // <-- Clear the path when finished
@@ -146,7 +146,6 @@ public class Enemy extends Player{
                 }
             }
         }
-        int tileSize = map.getTileSize();
         int targetPixelY = rowToY(targetRow);
         int targetPixelX = colToX(targetCol);
         if (Math.abs(y - targetPixelY) <= getSpeed()) y = targetPixelY;

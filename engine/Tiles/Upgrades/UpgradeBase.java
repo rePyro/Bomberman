@@ -1,3 +1,7 @@
+package engine.Tiles.Upgrades;
+
+import engine.Tiles.Tile;
+
 // package declarations and imports here;
 
 public class UpgradeBase extends Tile

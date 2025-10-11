@@ -1,3 +1,5 @@
+package engine.Tiles;
+
 // package declarations and imports here;
 
 import java.io.File;
@@ -5,6 +7,8 @@ import java.io.IOException;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+
+import engine.Player;
 
 public class Bomb extends Tile {
   // variables

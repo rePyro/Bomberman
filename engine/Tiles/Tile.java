@@ -1,3 +1,5 @@
+package engine.Tiles;
+
 // package declarations and imports here;
 
 public class Tile implements Cloneable {

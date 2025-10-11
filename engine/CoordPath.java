@@ -1,3 +1,5 @@
+package engine;
+
 import java.util.ArrayList;
 public class CoordPath {
     private ArrayList<Coordinate> path;

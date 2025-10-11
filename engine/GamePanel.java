@@ -1,5 +1,17 @@
+package engine;
+
 // imports
 import javax.swing.JPanel;
+
+import engine.Tiles.Bomb;
+import engine.Tiles.BombFire;
+import engine.Tiles.SoftWall;
+import engine.Tiles.SpawnTile;
+import engine.Tiles.TileImageStorage;
+import engine.Tiles.Upgrades.CountUpgrade;
+import engine.Tiles.Upgrades.PowerUpgrade;
+import engine.Tiles.Upgrades.SpeedUpgrade;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;

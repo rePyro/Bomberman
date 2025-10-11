@@ -1,5 +1,7 @@
+package engine.Tiles;
 
-    import java.util.ArrayList;
+
+import java.util.ArrayList;
 
 public class BombFireGroup implements Cloneable {
     private int fuse;

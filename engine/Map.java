@@ -1,5 +1,18 @@
+package engine;
+
 // package declarations and imports here;
 import java.util.ArrayList;
+
+import engine.Tiles.Bomb;
+import engine.Tiles.BombFire;
+import engine.Tiles.BombFireGroup;
+import engine.Tiles.HardWall;
+import engine.Tiles.SoftWall;
+import engine.Tiles.SpawnTile;
+import engine.Tiles.Tile;
+import engine.Tiles.Upgrades.CountUpgrade;
+import engine.Tiles.Upgrades.PowerUpgrade;
+import engine.Tiles.Upgrades.SpeedUpgrade;
 
 public class Map 
 {

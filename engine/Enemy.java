@@ -1,8 +1,18 @@
+package engine;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+
+import engine.Tiles.Bomb;
+import engine.Tiles.BombFire;
+import engine.Tiles.HardWall;
+import engine.Tiles.SoftWall;
+import engine.Tiles.Tile;
+import engine.Tiles.Upgrades.SpeedUpgrade;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 

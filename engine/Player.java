@@ -1,6 +1,15 @@
+package engine;
 // package declarations and imports here;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+
+import engine.Tiles.BombFire;
+import engine.Tiles.SpawnTile;
+import engine.Tiles.Tile;
+import engine.Tiles.Upgrades.CountUpgrade;
+import engine.Tiles.Upgrades.PowerUpgrade;
+import engine.Tiles.Upgrades.SpeedUpgrade;
+
 import java.io.IOException;
 import java.awt.Graphics2D;
 import java.io.File;
